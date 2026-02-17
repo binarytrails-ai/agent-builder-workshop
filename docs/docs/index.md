@@ -2,7 +2,7 @@
 
 Welcome to the AI Agent Builder Workshop!
 
-In this hands-on workshop, you'll build **Contoso Travel Assistant**, an intelligent AI-powered travel agent that helps users plan trips, search flights, and provide personalized recommendations.
+In this hands-on workshop, you'll build **Contoso Travel Assistant**, an intelligent AI-powered agent that helps users plan trips, search flights, and provide personalized recommendations.
 
 ![Cover](./media/cover.png)
 

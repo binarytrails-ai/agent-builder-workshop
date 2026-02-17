@@ -23,6 +23,17 @@ builder.Services.AddLogging(logging =>
 });
 builder.AddOpenTelemetryLogging(config);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
+
+builder.AddOpenAIChatCompletions();
+builder.Services.AddAGUI();
+
 IChatClient chatClient;
 OpenAI.Embeddings.EmbeddingClient embeddingClient;
 
@@ -68,59 +79,36 @@ builder.Services.AddSingleton<ContosoTravelAgent.Host.Tools.FlightFinderTools>()
 
 // Register agent factories
 builder.Services.AddSingleton<ContosoTravelAgentFactory>();
-builder.Services.AddSingleton<ContosoTravelWorkflowAgentFactory>();
-builder.Services.AddSingleton<TriageAgentFactory>();
-builder.Services.AddSingleton<TripAdvisorAgentFactory>();
-builder.Services.AddSingleton<FlightSearchAgentFactory>();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddAGUI();
-builder.AddDevUI();
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
-});
-
-// Add OpenAI services
-builder.AddOpenAIChatCompletions();
-builder.AddOpenAIResponses();
-builder.AddOpenAIConversations();
-
 builder.Services.AddKeyedSingleton("ContosoTravelAgent", (sp, key) =>
 {
     var factory = sp.GetRequiredService<ContosoTravelAgentFactory>();
     return factory.CreateAsync().Result;
 });
 
-builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
-{
-    var factory = sp.GetRequiredService<ContosoTravelWorkflowAgentFactory>();
-    return factory.Create();
-});
+//builder.Services.AddSingleton<ContosoTravelWorkflowAgentFactory>();
+//builder.Services.AddSingleton<TriageAgentFactory>();
+//builder.Services.AddSingleton<TripAdvisorAgentFactory>();
+//builder.Services.AddSingleton<FlightSearchAgentFactory>();
+//builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
+//{
+//    var factory = sp.GetRequiredService<ContosoTravelWorkflowAgentFactory>();
+//    return factory.Create();
+//});
 
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Ok(new { status = "healthy", service = "Contoso Travel Agent API" }));
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
-app.MapOpenApi();
-app.MapOpenAIResponses();
-app.MapOpenAIConversations();
-
 var travelBot = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelAgent");
-var travelBotWorkflowAgent = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelWorkflowAgent");
 app.MapOpenAIChatCompletions(travelBot);
-app.MapOpenAIChatCompletions(travelBotWorkflowAgent);
-
 // Map AGUI endpoint
 app.MapAGUI("/agent/contoso_travel_bot", travelBot);
+
+//var travelBotWorkflowAgent = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelWorkflowAgent");
+//app.MapOpenAIChatCompletions(travelBotWorkflowAgent);
 //app.MapAGUI("/agent/contoso_travel_bot", travelBotWorkflowAgent);
 
-// Map DevUI - it will discover and use the registered travel bot agent
-app.MapDevUI();
 app.UseRequestContext();
 app.UseCors();
 await app.RunAsync();

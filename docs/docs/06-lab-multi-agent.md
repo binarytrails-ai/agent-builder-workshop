@@ -98,10 +98,6 @@ var workflow = AgentWorkflowBuilder.CreateHandoffBuilderWith(triageAgent)
     // Triage → Specialists
     .WithHandoff(triageAgent, tripAdvisorAgent, "routing condition...")
     .WithHandoff(triageAgent, flightSearchAgent, "routing condition...")
-    
-    // Specialists → Triage (when work complete)
-    .WithHandoff(tripAdvisorAgent, triageAgent, "completion condition...")
-    .WithHandoff(flightSearchAgent, triageAgent, "completion condition...")
     .Build();
 ```
 
@@ -184,12 +180,32 @@ Tools = [
 
 ### Step 5: Enable Multi-Agent System
 
-Open [Program.cs](../../src/backend/Program.cs) and review the agent registration. Replace the following line to use the multi-agent workflow:
+Open [Program.cs](../../src/backend/Program.cs) and enable the multi-agent workflow by uncommenting the required sections:
+
+**1. Uncomment the workflow agent factory registrations**:
 
 ```csharp
-// Change this line:
-app.MapAGUI("/agent/contoso_travel_bot", travelBot);
-// To this:
+// Uncomment these lines:
+builder.Services.AddSingleton<ContosoTravelWorkflowAgentFactory>();
+builder.Services.AddSingleton<TriageAgentFactory>();
+builder.Services.AddSingleton<TripAdvisorAgentFactory>();
+builder.Services.AddSingleton<FlightSearchAgentFactory>();
+builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
+{
+    var factory = sp.GetRequiredService<ContosoTravelWorkflowAgentFactory>();
+    return factory.Create();
+});
+```
+
+**3. Switch from single agent to workflow agent**:
+
+```csharp
+// Comment out the single agent:
+// app.MapAGUI("/agent/contoso_travel_bot", travelBot);
+
+// Uncomment the workflow agent:
+var travelBotWorkflowAgent = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelWorkflowAgent");
+app.MapOpenAIChatCompletions(travelBotWorkflowAgent);
 app.MapAGUI("/agent/contoso_travel_bot", travelBotWorkflowAgent);
 ```
 
@@ -204,37 +220,17 @@ The workflow defines when to route between agents:
 ```csharp
 // Triage → Trip Advisor: User needs destination recommendations
 .WithHandoff(triageAgent, tripAdvisorAgent,
-    "User needs expert trip advisor to recommend travel destinations based on " +
-    "their preferences, budget, and interests. User asks generic travel questions " +
-    "or wants personalized destination recommendations.")
+    "User asks general travel questions (costs, best time to visit, what to see) OR asks questions about existing trips OR wants to plan a new trip.")
 
 // Triage → Flight Search: Destination selected, need flights
 .WithHandoff(triageAgent, flightSearchAgent,
-    "Destination has been selected and user wants to search for flights, " +
-    "discuss travel dates, or asks about flight options, prices, or schedules.")
+    "User wants to search for flights, find flights, look for flights, book flights, or asks about flight options, prices, schedules, or travel dates. Includes requests like 'find flights from X to Y', 'show me flights', 'search flights'." )
 
 ```
 
-### 2. Return Conditions
+### 2. Specialized Agents
 
-The specialized agents focus on their tasks and return control to the triage agent for further routing. Each agent has access to the complete chat history and can decide when to hand back control.
-
-```csharp
-// Trip Advisor → Triage: Destination chosen
-.WithHandoff(tripAdvisorAgent, triageAgent,
-    "After providing personalized destination recommendations and successfully " +
-    "helping user choose and confirm their ideal vacation destination.")
-
-// Flight Search → Triage: Flights presented
-.WithHandoff(flightSearchAgent, triageAgent,
-    "After presenting flight options and discussing travel dates with the user, " +
-    "once they have identified suitable flights.")
-
-// Calendar → Triage: Event added
-.WithHandoff(calendarAgent, triageAgent,
-    "After successfully adding the trip to the user's calendar with reminders, " +
-    "completing the trip planning process.")
-```
+The Trip Advisor Agent focuses on recommending destinations and providing travel advice, while the Flight Search Agent specializes in searching for flights based on user context and preferences. Browse their source code to see how their system prompts and tools are tailored to their specific roles.
 
 ---
 
