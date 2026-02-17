@@ -85,29 +85,29 @@ builder.Services.AddKeyedSingleton("ContosoTravelAgent", (sp, key) =>
     return factory.CreateAsync().Result;
 });
 
-//builder.Services.AddSingleton<ContosoTravelWorkflowAgentFactory>();
-//builder.Services.AddSingleton<TriageAgentFactory>();
-//builder.Services.AddSingleton<TripAdvisorAgentFactory>();
-//builder.Services.AddSingleton<FlightSearchAgentFactory>();
-//builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
-//{
-//    var factory = sp.GetRequiredService<ContosoTravelWorkflowAgentFactory>();
-//    return factory.Create();
-//});
+builder.Services.AddSingleton<ContosoTravelWorkflowAgentFactory>();
+builder.Services.AddSingleton<TriageAgentFactory>();
+builder.Services.AddSingleton<TripAdvisorAgentFactory>();
+builder.Services.AddSingleton<FlightSearchAgentFactory>();
+builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
+{
+    var factory = sp.GetRequiredService<ContosoTravelWorkflowAgentFactory>();
+    return factory.Create();
+});
 
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Ok(new { status = "healthy", service = "Contoso Travel Agent API" }));
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
-var travelBot = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelAgent");
-app.MapOpenAIChatCompletions(travelBot);
-// Map AGUI endpoint
-app.MapAGUI("/agent/contoso_travel_bot", travelBot);
+//var travelBot = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelAgent");
+//app.MapOpenAIChatCompletions(travelBot);
+//// Map AGUI endpoint
+//app.MapAGUI("/agent/contoso_travel_bot", travelBot);
 
-//var travelBotWorkflowAgent = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelWorkflowAgent");
-//app.MapOpenAIChatCompletions(travelBotWorkflowAgent);
-//app.MapAGUI("/agent/contoso_travel_bot", travelBotWorkflowAgent);
+var travelBotWorkflowAgent = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelWorkflowAgent");
+app.MapOpenAIChatCompletions(travelBotWorkflowAgent);
+app.MapAGUI("/agent/contoso_travel_bot", travelBotWorkflowAgent);
 
 app.UseRequestContext();
 app.UseCors();
