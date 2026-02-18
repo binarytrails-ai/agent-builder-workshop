@@ -109,7 +109,12 @@ public static class DateTimeTools
         var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, aestZone);
         var today = DateOnly.FromDateTime(now);
         var departure = DateOnly.Parse(departureDate);
-        var returnDate_parsed = DateOnly.Parse(returnDate);
+
+        var returnDate_parsed = departure.AddDays(7);
+        if (!string.IsNullOrEmpty(returnDate))
+        {
+            returnDate_parsed = DateOnly.Parse(returnDate);
+        }
 
         var daysUntilDeparture = departure.DayNumber - today.DayNumber;
         var tripDuration = returnDate_parsed.DayNumber - departure.DayNumber;
