@@ -197,9 +197,7 @@ const Chat = ({
    * Based on: https://docs.copilotkit.ai/reference/hooks/useHumanInTheLoop
    */
   useHumanInTheLoop({
-    name: "approve_flight_search", // This should match the tool name in the backend that requires approval
-    description:
-      "Request approval from the user before executing a flight search with their data",
+    name: "request_approval", // This should match the tool name in the backend that requires approval
     parameters: [
       {
         name: "request",

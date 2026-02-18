@@ -49,7 +49,7 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
     {
         if (toolCall.Name != "request_approval" || toolCall.Arguments == null)
         {
-            throw new InvalidOperationException("Invalid request_approval tool call");
+            throw new InvalidOperationException("Invalid tool call");
         }
 
         var request = toolCall.Arguments.TryGetValue("request", out var reqObj) &&

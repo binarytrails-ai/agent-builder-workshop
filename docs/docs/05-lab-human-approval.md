@@ -226,9 +226,7 @@ The approval workflow consists of following components that work together:
     ```typescript
     // In your React component (src/frontend/app/page.tsx)
     useHumanInTheLoop({
-        name: "request_approval",
-        description:
-        "Request customer approval before processing payment and submitting order",
+        name: "request_approval", // This should match the tool name in the backend that requires approval
         parameters: [
         {
             name: "request",

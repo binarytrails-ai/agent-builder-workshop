@@ -111,7 +111,7 @@ public static class DateTimeTools
         var departure = DateOnly.Parse(departureDate);
 
         var returnDate_parsed = departure.AddDays(7);
-        if (string.IsNullOrEmpty(returnDate))
+        if (!string.IsNullOrEmpty(returnDate))
         {
             returnDate_parsed = DateOnly.Parse(returnDate);
         }
