@@ -51,7 +51,7 @@ After Lab 1, agents can remember structured profiles, but lose conversational de
 
 ```text
 
-👤 User: Where was the place you suggested to me last time in New Zealand?
+👤 User: What places did you recommend to me last time in New Zealand?
 
 ```
 
@@ -106,7 +106,7 @@ After Lab 1, agents can remember structured profiles, but lose conversational de
 
 ```text
 
-👤 User: Where was the place you suggested to me last time in New Zealand?
+👤 User: What places did you recommend to me last time in New Zealand?
 
 ```
 
@@ -327,7 +327,7 @@ Now update the `CreateAsync` method to integrate the conversation history memory
 3. Start a new conversation by clicking on **New Chat** in the frontend UI, then ask:
 
     ```text
-    Where was the place you suggested to me last time in New Zealand?
+    What places did you recommend to me last time in New Zealand?
     ```
 
     *Expected Response:* Agent recalls the recommended destinations and provides details.
