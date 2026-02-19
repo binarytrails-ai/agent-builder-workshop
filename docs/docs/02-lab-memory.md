@@ -1,6 +1,6 @@
 # Lab 2: Remember Everything - Long-Term Memory with Vector Search
 
-In this lab, you will level up your AI travel agent to recall details from hundreds of past conversations, overcoming the limitations of context windows in Large Language Models (LLMs).
+In this lab, you will level up your travel assistant to recall details from hundreds of past conversations, overcoming the limitations of context windows in Large Language Models (LLMs).
 
 By the end of this lab, you will:
 

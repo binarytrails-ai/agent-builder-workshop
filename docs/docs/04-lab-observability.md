@@ -1,6 +1,6 @@
 # Lab 4: See Under the Hood - Observability
 
-In this lab, you'll implement observability and tracing for your AI travel agent using OpenTelemetry. You'll learn how to monitor agent operations, track tool calls, and visualize the entire execution flow to understand and debug your agent's behavior.
+In this lab, you'll implement observability and tracing for your travel assistant using OpenTelemetry. You'll learn how to monitor agent operations, track tool calls, and visualize the entire execution flow to understand and debug your agent's behavior.
 
 By the end of this lab, you will:
 

@@ -1,6 +1,6 @@
 # Lab 5: Human-in-the-Loop - Approval Workflows
 
-In this lab, you'll implement human approval workflows for your AI travel agent to ensure critical decisions require explicit user consent from the user before execution.
+In this lab, you'll implement human approval workflows for your travel assistant to ensure critical decisions require explicit user consent from the user before execution.
 
 This is important for actions that share sensitive information or perform an action on behalf of the user, such as searching for flights or booking reservations.
 

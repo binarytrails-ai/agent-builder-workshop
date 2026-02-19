@@ -1,6 +1,6 @@
 # Lab 1: Remember Me - Personalization & Memory
 
-In this lab, you will level up your AI travel agent by adding personalization capabilities.
+In this lab, you will level up your travel assistant by adding personalization capabilities.
 
 You will implement a custom memory provider that allows the agent to remember user preferences, and interests across multiple sessions.
 

@@ -1,6 +1,6 @@
 # Lab 3: Give It Superpowers - Tools Integration
 
-In this lab, you'll integrate your AI travel agent with external tools and APIs.
+In this lab, you'll integrate your travel assistant with external tools and APIs.
 
 You'll observe how Large Language Models (LLMs) automatically plan and trigger tool calls by extracting parameters from natural language conversations.
 

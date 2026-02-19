@@ -10,7 +10,7 @@
 
 ## 🌟 The Vision: What You'll Build
 
-By the end of this workshop, your Contoso Travel Agent will have this conversation:
+By the end of this workshop, your Travel Assistant will have this conversation:
 
 ```
 👤 Traveler: "Hey, I want to plan a vacation"

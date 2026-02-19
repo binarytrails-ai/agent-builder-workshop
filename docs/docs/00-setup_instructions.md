@@ -126,7 +126,7 @@ To work through the labs, you need to run both the backend (.NET) and frontend (
 - **Web Application Testing**: Open your web browser and navigate to `http://localhost:3000`.
 
   
-    Click on the `New Chat` button to start a new conversation with the AI travel agent. 
+    Click on the `New Chat` button to start a new conversation with the travel assistant. 
     
     Send a few messages to verify that the frontend and backend are communicating correctly.
 
