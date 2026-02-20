@@ -1,6 +1,6 @@
 # Lab 1: Remember Me - Personalization & Memory
 
-In this lab, you will level up your AI travel agent by adding personalization capabilities.
+In this lab, you will level up your travel assistant by adding personalization capabilities.
 
 You will implement a custom memory provider that allows the agent to remember user preferences, and interests across multiple sessions.
 
@@ -396,7 +396,7 @@ The `UserProfileMemoryProvider` class manages personalization by intercepting me
     Start the conversation with:
 
     ```text
-    Hi! I want to plan my next vacation
+    Hi! Can you help me plan a trip ?
     ```
 
     *Expected Response:* Agent greets you and asks about your travel preferences (e.g., budget, travel style, interests).
@@ -410,7 +410,7 @@ The `UserProfileMemoryProvider` class manages personalization by intercepting me
     Start a new conversation by clicking on **New Chat** in the frontend UI, then ask:
 
     ```text
-    Suggest a vacation for me
+    I want to plan my next vacation
     ```
 
     *Expected Response:* Agent references your stored profile and provides personalized recommendations based on your preferences.*

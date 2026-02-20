@@ -97,7 +97,7 @@ builder.Services.AddKeyedSingleton("ContosoTravelWorkflowAgent", (sp, key) =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Ok(new { status = "healthy", service = "Contoso Travel Agent API" }));
+app.MapGet("/", () => Results.Ok(new { status = "healthy", service = "Travel Assistant API" }));
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
 //var travelBot = app.Services.GetRequiredKeyedService<AIAgent>("ContosoTravelAgent");
