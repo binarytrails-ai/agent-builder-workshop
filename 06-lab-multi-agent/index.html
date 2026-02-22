@@ -1,0 +1,1117 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A workshop to learn about how to build and manage AI Agents using Microsoft Agent Framework.">
+      
+      
+        <meta name="author" content="Rakesh Lakshminarayanana">
+      
+      
+        <link rel="canonical" href="https://binarytrails-ai.github.io/agent-builder-workshop/06-lab-multi-agent/">
+      
+      
+        <link rel="prev" href="../05-lab-human-approval/">
+      
+      
+        <link rel="next" href="../finishing-up/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../media/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>LAB 5: Multi-Agent - AI Agent Builder Workshop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab-6-specialist-team-multi-agent-systems" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AI Agent Builder Workshop" class="md-header__button md-logo" aria-label="AI Agent Builder Workshop" data-md-component="logo">
+      
+  <img src="../media/favicon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI Agent Builder Workshop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LAB 5: Multi-Agent
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="pink" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2c-1.82 0-3.53.5-5 1.35C8 5.08 10 8.3 10 12s-2 6.92-5 8.65C6.47 21.5 8.18 22 10 22a10 10 0 0 0 10-10A10 10 0 0 0 10 2"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="amber" data-md-color-accent="cyan" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AI Agent Builder Workshop" class="md-nav__button md-logo" aria-label="AI Agent Builder Workshop" data-md-component="logo">
+      
+  <img src="../media/favicon.png" alt="logo">
+
+    </a>
+    AI Agent Builder Workshop
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-setup_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-lab-personalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 1: Personalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-lab-memory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 2: Memory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-lab-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 3: Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.1-lab-tool-error-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 3.1: Tool Error Handling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-lab-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 4: Human Approval
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 5: Multi-Agent
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LAB 5: Multi-Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem-a-single-agent-trying-to-do-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: A Single Agent Trying to Do Everything
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sample-interaction-what-youll-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample Interaction: What You'll Build
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instructions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Implementation Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-your-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Your Implementation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finishing-up/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finishing Up
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11">
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additional Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Additional Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Resources/azure-resource-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure Resource Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Resources/aspire-dashboard-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aspire Dashboard Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem-a-single-agent-trying-to-do-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: A Single Agent Trying to Do Everything
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sample-interaction-what-youll-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample Interaction: What You'll Build
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instructions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Implementation Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-your-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Your Implementation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lab-6-specialist-team-multi-agent-systems">Lab 6: Specialist Team - Multi-Agent Systems<a class="headerlink" href="#lab-6-specialist-team-multi-agent-systems" title="Permanent link">¶</a></h1>
+<p>In this lab, you'll transform your single-agent travel assistant into a multi-agent system with specialized agents working together.</p>
+<p>Each agent will have deep expertise in one area while seamlessly collaborating to deliver a better user experience.</p>
+<p>By the end of this lab, you will:</p>
+<ul>
+<li>✅ Build a multi-agent system with specialized agents for different tasks</li>
+<li>✅ Implement intelligent routing between agents</li>
+<li>✅ Maintain context across agent handoffs</li>
+</ul>
+<hr>
+<h2 id="the-problem-a-single-agent-trying-to-do-everything">The Problem: A Single Agent Trying to Do Everything<a class="headerlink" href="#the-problem-a-single-agent-trying-to-do-everything" title="Permanent link">¶</a></h2>
+<p>Your current travel agent handles everything - from recommending destinations to searching flights. While this works, it has limitations:</p>
+<p><strong>1. Complex Instructions</strong>: The agent's system prompt contains detailed workflows for multiple domains, making it difficult to maintain and optimize.</p>
+<p><strong>2. Conflicting Priorities</strong>: Instructions for different tasks can interfere with each other, leading to suboptimal performance.</p>
+<p><strong>3. Limited Scalability</strong>: Adding new capabilities (hotels, car rentals, activities) makes the agent increasingly complex.</p>
+<p><strong>4. No Specialization</strong>: A generalist agent cannot match the depth of expertise that specialized agents can provide.</p>
+<div class="highlight"><pre><span></span><code>👤 User: I want to plan a trip to New Zealand for hiking
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>🤖 Single Agent: [Processing with 200+ lines of instructions covering destinations, 
+                 flights, and all other tasks]
+
+    ❌ Complex system prompts
+    ❌ Harder to maintain
+    ❌ Less specialized expertise
+</code></pre></div>
+<hr>
+<h2 id="sample-interaction-what-youll-build">Sample Interaction: What You'll Build<a class="headerlink" href="#sample-interaction-what-youll-build" title="Permanent link">¶</a></h2>
+<p>With a multi-agent system, specialized agents handle specific tasks while a triage agent routes requests intelligently:</p>
+<div class="highlight"><pre><span></span><code>👤 User: Can you search for flights to Wellington next month?
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>🔀 Triage Agent → Routes to FlightSearchAgent
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>🔧 Flight Search Agent calls:
+    • GetUserContext() - retrieves home city
+    • ValidateTravelDates(startDate=2026-02-05, endDate=2026-02-26)
+    • SearchFlights(origin=Melbourne, destination=Auckland, ...)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>🤖 Flight Search Agent: I found a flight option for your trip from Melbourne to Wellington, leaving on Friday, February 9th, and returning after two weeks:
+
+        Flight: Qantas Flight QF107
+        Departure: Friday, February 9th, 11:30 AM
+        Arrival: Friday, February 9th, 6:15 PM
+        Duration: 6h 45m (Direct)
+        Price: $1,580 AUD
+        Amenities: WiFi, in-flight entertainment, vegetarian meals, power outlets, USB charging
+
+        Would you like to see more options or proceed with this one?
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>🔀 Flight Search Agent → Hands back to Triage Agent
+</code></pre></div>
+<hr>
+<h2 id="instructions">Instructions<a class="headerlink" href="#instructions" title="Permanent link">¶</a></h2>
+<h3 id="step-1-understand-the-workflow-structure">Step 1: Understand the Workflow Structure<a class="headerlink" href="#step-1-understand-the-workflow-structure" title="Permanent link">¶</a></h3>
+<p>The multi-agent system uses <strong>handoff-based routing</strong>: a central triage agent routes user requests to specialized agents based on intent. Then, specialists hand back to triage when their work is complete.</p>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span><span class="w"> </span><span class="n">workflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AgentWorkflowBuilder</span><span class="p">.</span><span class="n">CreateHandoffBuilderWith</span><span class="p">(</span><span class="n">triageAgent</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">// Triage → Specialists</span>
+<span class="w">    </span><span class="p">.</span><span class="n">WithHandoff</span><span class="p">(</span><span class="n">triageAgent</span><span class="p">,</span><span class="w"> </span><span class="n">tripAdvisorAgent</span><span class="p">,</span><span class="w"> </span><span class="s">"routing condition..."</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">WithHandoff</span><span class="p">(</span><span class="n">triageAgent</span><span class="p">,</span><span class="w"> </span><span class="n">flightSearchAgent</span><span class="p">,</span><span class="w"> </span><span class="s">"routing condition..."</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="step-2-locate-the-multi-agent-source-code">Step 2: Locate the Multi-Agent Source Code<a class="headerlink" href="#step-2-locate-the-multi-agent-source-code" title="Permanent link">¶</a></h3>
+<p>Navigate to the workflow agents directory:</p>
+<div class="highlight"><pre><span></span><code>📁 src/backend/Agents/Workflow/
+   ├── ContosoTravelWorkflowAgentFactory.cs  (Orchestrator)
+   ├── TriageAgentFactory.cs                 (Routing coordinator)
+   ├── TripAdvisorAgentFactory.cs            (Destination specialist)
+   ├── FlightSearchAgentFactory.cs           (Flight specialist)
+</code></pre></div>
+<h3 id="step-3-review-the-triage-agent">Step 3: Review the Triage Agent<a class="headerlink" href="#step-3-review-the-triage-agent" title="Permanent link">¶</a></h3>
+<p>Open <a href="../../src/backend/Agents/Workflow/TriageAgentFactory.cs">Agents/Workflow/TriageAgentFactory.cs</a>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">public</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">AIAgent</span><span class="w"> </span><span class="nf">Create</span><span class="p">(</span>
+<span class="w">    </span><span class="n">IChatClient</span><span class="w"> </span><span class="n">chatClient</span><span class="p">,</span>
+<span class="w">    </span><span class="n">IHttpContextAccessor</span><span class="w"> </span><span class="n">httpContextAccessor</span><span class="p">,</span>
+<span class="w">    </span><span class="n">JsonSerializerOptions</span><span class="w"> </span><span class="n">jsonSerializerOptions</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">chatClient</span><span class="p">.</span><span class="n">CreateAIAgent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ChatClientAgentOptions</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"triage_agent"</span><span class="p">,</span>
+<span class="w">        </span><span class="n">Description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Routes travel requests to the appropriate specialist agent"</span><span class="p">,</span>
+<span class="w">        </span><span class="n">ChatOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="p">()</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Instructions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
+<span class="w">            </span><span class="err">##</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">Role</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">route</span><span class="w"> </span><span class="n">ALL</span><span class="w"> </span><span class="n">requests</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">appropriate</span><span class="w"> </span><span class="n">specialist</span><span class="w"> </span><span class="n">agents</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">Specialists</span><span class="w"> </span><span class="n">complete</span><span class="w"> </span><span class="n">their</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">YOU</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">decide</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">specialist</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="n">step</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">coordinate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">entire</span><span class="w"> </span><span class="n">travel</span><span class="w"> </span><span class="n">planning</span><span class="w"> </span><span class="n">workflow</span>
+
+<span class="w">            </span><span class="err">##</span><span class="w"> </span><span class="n">Important</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">Route</span><span class="w"> </span><span class="n">immediately</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">intent</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">don</span><span class="err">'</span><span class="n">t</span><span class="w"> </span><span class="n">answer</span><span class="w"> </span><span class="n">travel</span><span class="w"> </span><span class="n">questions</span><span class="w"> </span><span class="n">yourself</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">Make</span><span class="w"> </span><span class="n">transitions</span><span class="w"> </span><span class="n">seamless</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">experience</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">continuous</span><span class="w"> </span><span class="n">conversation</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">Specialists</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">automatically</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">their</span><span class="w"> </span><span class="n">work</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">complete</span>
+<span class="w">            </span><span class="s">"""</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="step-4-review-specialist-agents">Step 4: Review Specialist Agents<a class="headerlink" href="#step-4-review-specialist-agents" title="Permanent link">¶</a></h3>
+<p>Each specialist agent is focused on one domain:</p>
+<p><strong>Trip Advisor Agent</strong> - <a href="../../src/backend/Agents/Workflow/TripAdvisorAgentFactory.cs">TripAdvisorAgentFactory.cs</a></p>
+<div class="highlight"><pre><span></span><code><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"trip_advisor_agent"</span>
+<span class="n">Description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Expert trip advisor who recommends travel destinations..."</span>
+<span class="n">Tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="n">GetCurrentDate</span><span class="p">,</span>
+<span class="w">    </span><span class="n">CalculateDateDifference</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ValidateTravelDates</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GetUserContext</span><span class="w">  </span><span class="c1">// Profile and preferences</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><strong>Flight Search Agent</strong> - <a href="../../src/backend/Agents/Workflow/FlightSearchAgentFactory.cs">FlightSearchAgentFactory.cs</a></p>
+<div class="highlight"><pre><span></span><code><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"flight_search_agent"</span>
+<span class="n">Description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Searches and recommends flights for a chosen destination..."</span>
+<span class="n">Tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="n">GetUserContext</span><span class="p">,</span>
+<span class="w">    </span><span class="n">GetCurrentDate</span><span class="p">,</span>
+<span class="w">    </span><span class="n">ValidateTravelDates</span><span class="p">,</span>
+<span class="w">    </span><span class="n">SearchFlights</span><span class="w">  </span><span class="c1">// External flight API</span>
+<span class="p">]</span>
+</code></pre></div>
+<h3 id="step-5-enable-multi-agent-system">Step 5: Enable Multi-Agent System<a class="headerlink" href="#step-5-enable-multi-agent-system" title="Permanent link">¶</a></h3>
+<p>Open <a href="../../src/backend/Program.cs">Program.cs</a> and enable the multi-agent workflow by uncommenting the required sections:</p>
+<p><strong>1. Uncomment the workflow agent factory registrations</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Uncomment these lines:</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddSingleton</span><span class="o">&lt;</span><span class="n">ContosoTravelWorkflowAgentFactory</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddSingleton</span><span class="o">&lt;</span><span class="n">TriageAgentFactory</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddSingleton</span><span class="o">&lt;</span><span class="n">TripAdvisorAgentFactory</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddSingleton</span><span class="o">&lt;</span><span class="n">FlightSearchAgentFactory</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">AddKeyedSingleton</span><span class="p">(</span><span class="s">"ContosoTravelWorkflowAgent"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">sp</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">var</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sp</span><span class="p">.</span><span class="n">GetRequiredService</span><span class="o">&lt;</span><span class="n">ContosoTravelWorkflowAgentFactory</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">factory</span><span class="p">.</span><span class="n">Create</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><strong>3. Switch from single agent to workflow agent</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Comment out the single agent:</span>
+<span class="c1">// app.MapAGUI("/agent/contoso_travel_bot", travelBot);</span>
+
+<span class="c1">// Uncomment the workflow agent:</span>
+<span class="kt">var</span><span class="w"> </span><span class="n">travelBotWorkflowAgent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">GetRequiredKeyedService</span><span class="o">&lt;</span><span class="n">AIAgent</span><span class="o">&gt;</span><span class="p">(</span><span class="s">"ContosoTravelWorkflowAgent"</span><span class="p">);</span>
+<span class="n">app</span><span class="p">.</span><span class="n">MapOpenAIChatCompletions</span><span class="p">(</span><span class="n">travelBotWorkflowAgent</span><span class="p">);</span>
+<span class="n">app</span><span class="p">.</span><span class="n">MapAGUI</span><span class="p">(</span><span class="s">"/agent/contoso_travel_bot"</span><span class="p">,</span><span class="w"> </span><span class="n">travelBotWorkflowAgent</span><span class="p">);</span>
+</code></pre></div>
+<hr>
+<h2 id="key-implementation-details">Key Implementation Details<a class="headerlink" href="#key-implementation-details" title="Permanent link">¶</a></h2>
+<h3 id="1-handoff-routing-conditions">1. Handoff Routing Conditions<a class="headerlink" href="#1-handoff-routing-conditions" title="Permanent link">¶</a></h3>
+<p>The workflow defines when to route between agents:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Triage → Trip Advisor: User needs destination recommendations</span>
+<span class="p">.</span><span class="n">WithHandoff</span><span class="p">(</span><span class="n">triageAgent</span><span class="p">,</span><span class="w"> </span><span class="n">tripAdvisorAgent</span><span class="p">,</span>
+<span class="w">    </span><span class="s">"User asks general travel questions (costs, best time to visit, what to see) OR asks questions about existing trips OR wants to plan a new trip."</span><span class="p">)</span>
+
+<span class="c1">// Triage → Flight Search: Destination selected, need flights</span>
+<span class="p">.</span><span class="n">WithHandoff</span><span class="p">(</span><span class="n">triageAgent</span><span class="p">,</span><span class="w"> </span><span class="n">flightSearchAgent</span><span class="p">,</span>
+<span class="w">    </span><span class="s">"User wants to search for flights, find flights, look for flights, book flights, or asks about flight options, prices, schedules, or travel dates. Includes requests like 'find flights from X to Y', 'show me flights', 'search flights'."</span><span class="w"> </span><span class="p">)</span>
+</code></pre></div>
+<h3 id="2-specialized-agents">2. Specialized Agents<a class="headerlink" href="#2-specialized-agents" title="Permanent link">¶</a></h3>
+<p>The Trip Advisor Agent focuses on recommending destinations and providing travel advice, while the Flight Search Agent specializes in searching for flights based on user context and preferences. Browse their source code to see how their system prompts and tools are tailored to their specific roles.</p>
+<hr>
+<h2 id="test-your-implementation">Test Your Implementation<a class="headerlink" href="#test-your-implementation" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p>Refer to the <strong>Running the Application Locally</strong> section in the <a href="../00-setup_instructions/#running-the-application-locally">Setup Instructions</a> and start running both the backend and frontend.</p>
+<p>If the application is already running, restart the backend server by stopping it (Ctrl + C) and running <code>dotnet run</code> again in the <code>src/backend</code> directory.</p>
+</li>
+<li>
+<p><strong>Test the multi-agent workflow</strong>:</p>
+</li>
+</ol>
+<p><strong>Prompt 1</strong>: Test Trip Advisor routing</p>
+<div class="highlight"><pre><span></span><code> Hi! I want to plan my next vacation
+</code></pre></div>
+<p><em>Expected Response</em>:</p>
+<ul>
+<li>Triage routes to Trip Advisor Agent</li>
+<li>Agent calls GetUserContext(), GetCurrentDate()</li>
+<li>Provides 3-4 destination recommendations</li>
+<li>Has natural conversation about options and suggests a destination</li>
+</ul>
+<p><strong>Prompt 2</strong>: Test Flight Search routing</p>
+<div class="highlight"><pre><span></span><code>Can you search for flights to Wellington next month?
+</code></pre></div>
+<hr>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
+<p>Congratulations! You've built a sophisticated multi-agent system with specialized agents collaborating to deliver an excellent user experience.</p>
+<p>This architecture provides a solid foundation for building complex, scalable AI applications.</p>
+<p>👉 <strong><a href="../finishing-up/">Finishing Up</a></strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../05-lab-human-approval/" class="md-footer__link md-footer__link--prev" aria-label="Previous: LAB 4: Human Approval">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                LAB 4: Human Approval
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../finishing-up/" class="md-footer__link md-footer__link--next" aria-label="Next: Finishing Up">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Finishing Up
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.footer", "content.code.copy", "navigation.tabs.sticky", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../js/custom-nav.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>
