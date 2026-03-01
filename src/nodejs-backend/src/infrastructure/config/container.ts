@@ -2,17 +2,12 @@ import { Container } from 'inversify'
 import { Logger } from '@aws-lambda-powertools/logger'
 import { TYPES } from './types'
 
-// Domain Services
-import { TravelDomainServiceImpl } from '@domain/services/TravelDomainServiceImpl'
-
-// Infrastructure Services  
+// Infrastructure Services
 import { AWSConfigService } from './AWSConfigService'
 import { DynamoDBUserProfileRepository } from '@infrastructure/adapters/DynamoDBUserProfileRepository'
 import { DynamoDBChatHistoryRepository } from '@infrastructure/adapters/DynamoDBChatHistoryRepository'
 import { DynamoDBFlightSearchRepository } from '@infrastructure/adapters/DynamoDBFlightSearchRepository'
-
-// Application Services (to be implemented in Phase 4)
-// import { BedrockAIService } from '@infrastructure/adapters/BedrockAIService'
+import { TravelAgentService } from '@application/services/TravelAgentService'
 
 /**
  * Dependency Injection Container Configuration
@@ -29,9 +24,6 @@ export async function configureContainer(): Promise<Container> {
   // Logging
   const logger = new Logger({ serviceName: 'contoso-travel-agent' })
   container.bind(TYPES.Logger).toConstantValue(logger)
-
-  // Domain Services
-  container.bind(TYPES.TravelAgentService).to(TravelDomainServiceImpl)
 
   // Infrastructure - Repositories
   container.bind(TYPES.UserProfileRepository).toDynamicValue(() => {
@@ -52,12 +44,23 @@ export async function configureContainer(): Promise<Container> {
     return new DynamoDBFlightSearchRepository(config.getDynamoDBConfig(), logger)
   })
 
-  // AI Services (placeholder for Phase 4)
-  // container.bind(TYPES.AIService).toDynamicValue((context) => {
-  //   const config = context.container.get<AWSConfigService>(TYPES.AppConfig)
-  //   const logger = context.container.get<Logger>(TYPES.Logger)
-  //   return new BedrockAIService(config.getBedrockConfig(), logger)
-  // })
+  // Application Service
+  container.bind(TYPES.TravelAgentService).toDynamicValue(() => {
+    const configService = container.get<AWSConfigService>(TYPES.AppConfig)
+    const logger = container.get<Logger>(TYPES.Logger)
+
+    const flightRepository = container.get<DynamoDBFlightSearchRepository>(TYPES.FlightDataRepository)
+    const chatHistoryRepository = container.get<DynamoDBChatHistoryRepository>(TYPES.ChatHistoryRepository)
+    const userProfileRepository = container.get<DynamoDBUserProfileRepository>(TYPES.UserProfileRepository)
+
+    return new TravelAgentService(
+      flightRepository,
+      chatHistoryRepository,
+      userProfileRepository,
+      configService.getConfig(),
+      logger
+    )
+  })
 
   return container
 }

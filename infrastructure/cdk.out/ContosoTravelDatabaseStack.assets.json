@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "2558da8bce2d665610b5b157e847b0dc3820af325cb3b63f02a55490fea39ae6": {
+      "displayName": "ContosoTravelDatabaseStack Template",
+      "source": {
+        "path": "ContosoTravelDatabaseStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-070e4abe": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "2558da8bce2d665610b5b157e847b0dc3820af325cb3b63f02a55490fea39ae6.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

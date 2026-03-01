@@ -13,11 +13,11 @@ param location string = 'australiaeast'
 param resourcePrefix string = 'aiagent-ws'
 
 // Azure AI Service parameters
-param chatCompletionModel string = 'gpt-4o'
+param chatCompletionModel string = 'gpt-4o-mini'
 param chatCompletionModelFormat string = 'OpenAI'
-param chatCompletionModelVersion string = '2024-11-20'
+param chatCompletionModelVersion string = '2024-07-18'
 param chatCompletionModelSkuName string = 'GlobalStandard'
-param chatCompletionModelCapacity int = 50
+param chatCompletionModelCapacity int = 10
 param modelLocation string = 'australiaeast'
 
 // Embedding model parameters

@@ -32,7 +32,9 @@
       "@domain/*": ["./src/domain/*"],
       "@application/*": ["./src/application/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
-      "@presentation/*": ["./src/presentation/*"]
+      "@presentation/*": ["./src/presentation/*"],
+      "@auth/*": ["./src/auth/*"],
+      "@handlers/*": ["./src/handlers/*"]
     }
   },
   "include": [

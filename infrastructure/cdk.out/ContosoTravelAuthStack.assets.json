@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "601e0a8a6746d0b6243e3fee95a6d2fa186e1c77ef19d60d0f847348223ef46b": {
+      "displayName": "ContosoTravelAuthStack Template",
+      "source": {
+        "path": "ContosoTravelAuthStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-5b351197": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "601e0a8a6746d0b6243e3fee95a6d2fa186e1c77ef19d60d0f847348223ef46b.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

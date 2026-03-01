@@ -1,17 +1,9 @@
 import { 
   DynamoDBClient, 
-  CreateTableCommand, 
-  DescribeTableCommand,
-  TableDescription 
+  DescribeTableCommand
 } from '@aws-sdk/client-dynamodb'
 import { 
-  DynamoDBDocumentClient,
-  PutCommand,
-  GetCommand, 
-  QueryCommand,
-  DeleteCommand,
-  UpdateCommand,
-  ScanCommand
+  DynamoDBDocumentClient
 } from '@aws-sdk/lib-dynamodb'
 import { Logger } from '@aws-lambda-powertools/logger'
 
@@ -45,7 +37,7 @@ export abstract class BaseDynamoDBRepository {
     return `${this.tablePrefix}-${baseName}`
   }
 
-  protected async ensureTableExists(tableName: string, tableDefinition?: any): Promise<void> {
+  protected async ensureTableExists(tableName: string): Promise<void> {
     try {
       await this.client.send(new DescribeTableCommand({ TableName: tableName }))
       this.logger.debug(`Table ${tableName} exists`)

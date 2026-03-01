@@ -1,0 +1,230 @@
+{
+ "Resources": {
+  "ChatHistoryTableA22BA13C": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "sessionId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "sessionId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "contoso-travel-chat-history"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelDatabaseStack/ChatHistoryTable/Resource"
+   }
+  },
+  "UserProfileTable61BB5480": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "email",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "email-index",
+      "KeySchema": [
+       {
+        "AttributeName": "email",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "contoso-travel-user-profiles"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelDatabaseStack/UserProfileTable/Resource"
+   }
+  },
+  "FlightsTable9F4F55CE": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "routeId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "flightDate",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "flightId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "flightId-index",
+      "KeySchema": [
+       {
+        "AttributeName": "flightId",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "routeId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "flightDate",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "contoso-travel-flights"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelDatabaseStack/FlightsTable/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXGQQqAIBAAwLd01y3FH/SD6h6rbqCVQltJRH8P6jSjQZsGmgoLS+dnuQQLd7+jmwUWHv2VcM3ewj2gXUi0U/ryiI44H5ujR6TsCSLXpzagFKgqcghyO9IeVoLu9wWgD2viaAAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelDatabaseStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ChatHistoryTableA22BA13C",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38"
+   }
+  },
+  "ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73": {
+   "Value": {
+    "Fn::GetAtt": [
+     "UserProfileTable61BB5480",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+   }
+  },
+  "ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlightsTable9F4F55CE",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+   }
+  },
+  "ExportsOutputRefChatHistoryTableA22BA13C5B671E77": {
+   "Value": {
+    "Ref": "ChatHistoryTableA22BA13C"
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputRefChatHistoryTableA22BA13C5B671E77"
+   }
+  },
+  "ExportsOutputRefUserProfileTable61BB54804A17922C": {
+   "Value": {
+    "Ref": "UserProfileTable61BB5480"
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputRefUserProfileTable61BB54804A17922C"
+   }
+  },
+  "ExportsOutputRefFlightsTable9F4F55CE8DDBF556": {
+   "Value": {
+    "Ref": "FlightsTable9F4F55CE"
+   },
+   "Export": {
+    "Name": "ContosoTravelDatabaseStack:ExportsOutputRefFlightsTable9F4F55CE8DDBF556"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

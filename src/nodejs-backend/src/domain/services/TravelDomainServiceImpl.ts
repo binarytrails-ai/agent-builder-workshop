@@ -163,13 +163,17 @@ export class TravelDomainServiceImpl implements TravelDomainService {
     const dateMatch = query.match(dateRegex)
     const passengerMatch = query.match(passengersRegex)
     
-    if (cityMatch) {
+    if (cityMatch?.[1] && cityMatch[2]) {
+      const origin = cityMatch[1].trim()
+      const destination = cityMatch[2].trim()
+      const travelers = passengerMatch?.[1] ? parseInt(passengerMatch[1], 10) : 1
+
       return {
-        origin: cityMatch[1].trim(),
-        destination: cityMatch[2].trim(),
+        origin,
+        destination,
         departureDate: dateMatch?.[1] || new Date().toISOString().split('T')[0],
         returnDate: dateMatch?.[1] || new Date().toISOString().split('T')[0],
-        travelers: passengerMatch ? parseInt(passengerMatch[1]) : 1,
+        travelers,
         maxBudget: userContext.preferences.budgetRange ? this.parseBudgetRange(userContext.preferences.budgetRange) : undefined
       }
     }

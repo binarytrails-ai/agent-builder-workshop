@@ -1,0 +1,702 @@
+{
+ "Resources": {
+  "ChatHandlerServiceRole801A14FE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ChatHandler/ServiceRole/Resource"
+   }
+  },
+  "ChatHandlerServiceRoleDefaultPolicy7E79112C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38"
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38"
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ChatHandlerServiceRoleDefaultPolicy7E79112C",
+    "Roles": [
+     {
+      "Ref": "ChatHandlerServiceRole801A14FE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ChatHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ChatHandler6667856F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "829418c9266df09354df8a5b63ed0206353ffec6c3804a86a3f72605519c76e6.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DYNAMODB_CHAT_HISTORY_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefChatHistoryTableA22BA13C5B671E77"
+      },
+      "DYNAMODB_USER_PROFILE_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefUserProfileTable61BB54804A17922C"
+      },
+      "DYNAMODB_FLIGHTS_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefFlightsTable9F4F55CE8DDBF556"
+      },
+      "COGNITO_USER_POOL_ID": {
+       "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolBD5E9E51D83A1B46"
+      },
+      "COGNITO_USER_POOL_CLIENT_ID": {
+       "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolClient0627A46F3308BB30"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ChatHandlerServiceRole801A14FE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "ChatHandlerServiceRoleDefaultPolicy7E79112C",
+    "ChatHandlerServiceRole801A14FE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ChatHandler/Resource",
+    "aws:asset:path": "asset.829418c9266df09354df8a5b63ed0206353ffec6c3804a86a3f72605519c76e6",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ApprovalHandlerServiceRoleB1DD4DD7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ApprovalHandler/ServiceRole/Resource"
+   }
+  },
+  "ApprovalHandlerServiceRoleDefaultPolicyA08D2746": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38"
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttChatHistoryTableA22BA13CArn2A2B7E38"
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttUserProfileTable61BB5480Arn8F33ED73"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputFnGetAttFlightsTable9F4F55CEArn3F51EB00"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApprovalHandlerServiceRoleDefaultPolicyA08D2746",
+    "Roles": [
+     {
+      "Ref": "ApprovalHandlerServiceRoleB1DD4DD7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ApprovalHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ApprovalHandler2AB7427F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "61bec02805fbbbb004eef020522535f9cb4d2803c1d342c0aac9c13fa149471c.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DYNAMODB_CHAT_HISTORY_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefChatHistoryTableA22BA13C5B671E77"
+      },
+      "DYNAMODB_USER_PROFILE_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefUserProfileTable61BB54804A17922C"
+      },
+      "DYNAMODB_FLIGHTS_TABLE": {
+       "Fn::ImportValue": "ContosoTravelDatabaseStack:ExportsOutputRefFlightsTable9F4F55CE8DDBF556"
+      },
+      "COGNITO_USER_POOL_ID": {
+       "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolBD5E9E51D83A1B46"
+      },
+      "COGNITO_USER_POOL_CLIENT_ID": {
+       "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolClient0627A46F3308BB30"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ApprovalHandlerServiceRoleB1DD4DD7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "ApprovalHandlerServiceRoleDefaultPolicyA08D2746",
+    "ApprovalHandlerServiceRoleB1DD4DD7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/ApprovalHandler/Resource",
+    "aws:asset:path": "asset.61bec02805fbbbb004eef020522535f9cb4d2803c1d342c0aac9c13fa149471c",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "TravelAgentApiA902B284": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "contoso-travel-agent-api",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/Resource"
+   }
+  },
+  "TravelAgentApiDefaultStage2B1EEFAC": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/DefaultStage/Resource"
+   }
+  },
+  "TravelAgentApiPOSTchatChatIntegration369A5659": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ChatHandler6667856F",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--chat/ChatIntegration/Resource"
+   }
+  },
+  "TravelAgentApiPOSTchatChatIntegrationPermissionCC09F1D8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ChatHandler6667856F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TravelAgentApiA902B284"
+       },
+       "/*/*/chat"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--chat/ChatIntegration-Permission"
+   }
+  },
+  "TravelAgentApiPOSTchat22E5CE2B": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /chat",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "TravelAgentApiPOSTchatChatIntegration369A5659"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--chat/Resource"
+   }
+  },
+  "TravelAgentApiPOSTapprovalApprovalIntegration2BF8310B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ApprovalHandler2AB7427F",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--approval/ApprovalIntegration/Resource"
+   }
+  },
+  "TravelAgentApiPOSTapprovalApprovalIntegrationPermission4B78135F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApprovalHandler2AB7427F",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TravelAgentApiA902B284"
+       },
+       "/*/*/approval"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--approval/ApprovalIntegration-Permission"
+   }
+  },
+  "TravelAgentApiPOSTapproval016A2BBF": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /approval",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "TravelAgentApiPOSTapprovalApprovalIntegration2BF8310B"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--approval/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12PTYrDMAyFz9K9ozZpL9AWhpnNMKQHCKrjBuXHDpHSUIzvPtims5jV956QHk8VVKcDHHa4caHboRjpDv4mqAeFGzd+xOneYmNda3qG74SP1WohZxXhBL52o1HXh038cSPpV7RZBcXHBpmNMJwjFB/hsurByAXZqBwP/vqwf6nx2CwTMZOzQeFMHYrZ8PWswH+KzOeZ4lJEtDfBLjXIIo5qt0pWX1ZMt+A7+J9NeyGoVC2ek+2Cis9Cz/tndYKyhHLXM1GxrFZoMlBn/gIX9TV2OQEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

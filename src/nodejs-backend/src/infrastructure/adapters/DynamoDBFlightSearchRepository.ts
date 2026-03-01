@@ -1,5 +1,5 @@
 import { injectable } from 'inversify'
-import { QueryCommand, ScanCommand, GetCommand } from '@aws-sdk/lib-dynamodb'
+import { QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb'
 import { Logger } from '@aws-lambda-powertools/logger'
 import { BaseDynamoDBRepository, DynamoDBConfig } from './BaseDynamoDBRepository'
 import { FlightSearchRepository } from '@application/ports/repositories'

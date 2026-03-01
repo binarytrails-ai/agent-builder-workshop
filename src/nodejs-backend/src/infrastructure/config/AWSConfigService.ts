@@ -1,4 +1,5 @@
 import { TravelConfig } from '@domain/models/TravelConfig'
+import type { DynamoDBConfig } from '@infrastructure/adapters/BaseDynamoDBRepository'
 
 /**
  * AWS Configuration Service
@@ -24,41 +25,56 @@ export class AWSConfigService {
 
     // In production, you might load from AWS Parameter Store
     // For now, we'll use environment variables with sensible defaults
-    this.config = {
+    const env = process.env
+
+    const config: TravelConfig = {
       // GitHub Models configuration
-      useGitHubModels: process.env.USE_GITHUB_MODELS === 'true' || false,
-      githubToken: process.env.GITHUB_TOKEN,
-      githubModelsBaseUrl: process.env.GITHUB_MODELS_BASE_URL || 'https://models.inference.ai.azure.com',
-      githubTextModelId: process.env.GITHUB_TEXT_MODEL_ID || 'gpt-4o',
-      githubEmbeddingModelId: process.env.GITHUB_EMBEDDING_MODEL_ID || 'openai/text-embedding-ada-002',
+      useGitHubModels: env['USE_GITHUB_MODELS'] === 'true',
+      githubModelsBaseUrl: env['GITHUB_MODELS_BASE_URL'] || 'https://models.inference.ai.azure.com',
+      githubTextModelId: env['GITHUB_TEXT_MODEL_ID'] || 'gpt-4o',
+      githubEmbeddingModelId: env['GITHUB_EMBEDDING_MODEL_ID'] || 'openai/text-embedding-ada-002',
 
       // AWS configuration
-      awsRegion: process.env.AWS_REGION || 'us-east-1',
-      bedrockModel: process.env.BEDROCK_MODEL || 'anthropic.claude-3-sonnet-20240229-v1:0',
-      bedrockEndpoint: process.env.BEDROCK_ENDPOINT,
-      awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      awsRegion: env['AWS_REGION'] || 'us-east-1',
+      bedrockModel: env['BEDROCK_MODEL'] || 'anthropic.claude-3-sonnet-20240229-v1:0',
 
       // DynamoDB configuration
-      dynamoDBTablePrefix: process.env.DYNAMODB_TABLE_PREFIX || 'contoso-travel',
-      dynamoDBChatHistoryTable: process.env.DYNAMODB_CHAT_HISTORY_TABLE || 'contoso-travel-chat-history',
-      dynamoDBUserProfileTable: process.env.DYNAMODB_USER_PROFILE_TABLE || 'contoso-travel-user-profiles',
-      dynamoDBFlightsTable: process.env.DYNAMODB_FLIGHTS_TABLE || 'contoso-travel-flights',
+      dynamoDBTablePrefix: env['DYNAMODB_TABLE_PREFIX'] || 'contoso-travel',
+      dynamoDBChatHistoryTable: env['DYNAMODB_CHAT_HISTORY_TABLE'] || 'contoso-travel-chat-history',
+      dynamoDBUserProfileTable: env['DYNAMODB_USER_PROFILE_TABLE'] || 'contoso-travel-user-profiles',
+      dynamoDBFlightsTable: env['DYNAMODB_FLIGHTS_TABLE'] || 'contoso-travel-flights',
 
       // OpenTelemetry configuration
-      otelExporterOtlpEndpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-
       // Mem0 configuration
-      mem0Endpoint: process.env.MEM0_ENDPOINT || 'https://api.mem0.ai',
-      mem0ApiKey: process.env.MEM0_API_KEY,
+      mem0Endpoint: env['MEM0_ENDPOINT'] || 'https://api.mem0.ai',
 
       // Lambda/API configuration
-      jwtSecret: process.env.JWT_SECRET || 'development-secret-change-in-production',
-      cognitoUserPoolId: process.env.COGNITO_USER_POOL_ID || 'us-east-1_development',
-      environment: (process.env.NODE_ENV as any) || 'development'
+      jwtSecret: env['JWT_SECRET'] || 'development-secret-change-in-production',
+      cognitoUserPoolId: env['COGNITO_USER_POOL_ID'] || 'us-east-1_development',
+      environment: (env['NODE_ENV'] as TravelConfig['environment']) || 'development'
     }
 
-    return this.config
+    if (env['GITHUB_TOKEN']) {
+      Object.assign(config, { githubToken: env['GITHUB_TOKEN'] })
+    }
+    if (env['BEDROCK_ENDPOINT']) {
+      Object.assign(config, { bedrockEndpoint: env['BEDROCK_ENDPOINT'] })
+    }
+    if (env['AWS_ACCESS_KEY_ID']) {
+      Object.assign(config, { awsAccessKeyId: env['AWS_ACCESS_KEY_ID'] })
+    }
+    if (env['AWS_SECRET_ACCESS_KEY']) {
+      Object.assign(config, { awsSecretAccessKey: env['AWS_SECRET_ACCESS_KEY'] })
+    }
+    if (env['OTEL_EXPORTER_OTLP_ENDPOINT']) {
+      Object.assign(config, { otelExporterOtlpEndpoint: env['OTEL_EXPORTER_OTLP_ENDPOINT'] })
+    }
+    if (env['MEM0_API_KEY']) {
+      Object.assign(config, { mem0ApiKey: env['MEM0_API_KEY'] })
+    }
+
+    this.config = config
+    return config
   }
 
   getConfig(): TravelConfig {
@@ -113,12 +129,14 @@ export class AWSConfigService {
   /**
    * Gets DynamoDB configuration
    */
-  getDynamoDBConfig() {
+  getDynamoDBConfig(): DynamoDBConfig {
     const config = this.getConfig()
+    const endpoint = config.environment === 'development' ? process.env['DYNAMODB_ENDPOINT'] : undefined
+
     return {
       region: config.awsRegion,
       tablePrefix: config.dynamoDBTablePrefix,
-      endpoint: config.environment === 'development' ? process.env.DYNAMODB_ENDPOINT : undefined
+      ...(endpoint ? { endpoint } : {})
     }
   }
 

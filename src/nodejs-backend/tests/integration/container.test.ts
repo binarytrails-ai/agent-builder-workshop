@@ -20,10 +20,10 @@ describe('Dependency Injection Container', () => {
     const logger = container.get(TYPES.Logger)
     expect(logger).toBeInstanceOf(Logger)
 
-    // Domain Services
+    // Application Services
     const travelService = container.get(TYPES.TravelAgentService)
     expect(travelService).toBeTruthy()
-    expect(travelService.validateTravelQuery).toBeTypeOf('function')
+    expect(travelService.processMessage).toBeTypeOf('function')
   })
 
   it('should resolve repository services', () => {
