@@ -29,5 +29,6 @@ export interface TravelConfig {
   // Lambda/API configuration
   readonly jwtSecret: string
   readonly cognitoUserPoolId: string
+  readonly cognitoUserPoolClientId: string
   readonly environment: 'development' | 'staging' | 'production'
 }

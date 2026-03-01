@@ -196,7 +196,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "829418c9266df09354df8a5b63ed0206353ffec6c3804a86a3f72605519c76e6.zip"
+     "S3Key": "294214a3eb21f10dbfd996331aa928e46106dceb0d1a0db5ced7a8c9af517419.zip"
     },
     "Environment": {
      "Variables": {
@@ -232,7 +232,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "ContosoTravelComputeStack/ChatHandler/Resource",
-    "aws:asset:path": "asset.829418c9266df09354df8a5b63ed0206353ffec6c3804a86a3f72605519c76e6",
+    "aws:asset:path": "asset.294214a3eb21f10dbfd996331aa928e46106dceb0d1a0db5ced7a8c9af517419",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -433,7 +433,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "61bec02805fbbbb004eef020522535f9cb4d2803c1d342c0aac9c13fa149471c.zip"
+     "S3Key": "e01e02f2e0e2a0c2d90895ba53741aaddfd45aaa5bd79f9697a9778120fa01b0.zip"
     },
     "Environment": {
      "Variables": {
@@ -469,7 +469,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "ContosoTravelComputeStack/ApprovalHandler/Resource",
-    "aws:asset:path": "asset.61bec02805fbbbb004eef020522535f9cb4d2803c1d342c0aac9c13fa149471c",
+    "aws:asset:path": "asset.e01e02f2e0e2a0c2d90895ba53741aaddfd45aaa5bd79f9697a9778120fa01b0",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -558,7 +558,10 @@
     "ApiId": {
      "Ref": "TravelAgentApiA902B284"
     },
-    "AuthorizationType": "NONE",
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "TravelAgentApiCognitoJwtAuthorizerFECC173B"
+    },
     "RouteKey": "POST /chat",
     "Target": {
      "Fn::Join": [
@@ -574,6 +577,40 @@
    },
    "Metadata": {
     "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/POST--chat/Resource"
+   }
+  },
+  "TravelAgentApiCognitoJwtAuthorizerFECC173B": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TravelAgentApiA902B284"
+    },
+    "AuthorizerType": "JWT",
+    "IdentitySource": [
+     "$request.header.Authorization"
+    ],
+    "JwtConfiguration": {
+     "Audience": [
+      {
+       "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolClient0627A46F3308BB30"
+      }
+     ],
+     "Issuer": {
+      "Fn::Join": [
+       "",
+       [
+        "https://cognito-idp.us-east-1.amazonaws.com/",
+        {
+         "Fn::ImportValue": "ContosoTravelAuthStack:ExportsOutputRefTravelAgentUserPoolBD5E9E51D83A1B46"
+        }
+       ]
+      ]
+     }
+    },
+    "Name": "CognitoJwtAuthorizer"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoTravelComputeStack/TravelAgentApi/CognitoJwtAuthorizer/Resource"
    }
   },
   "TravelAgentApiPOSTapprovalApprovalIntegration2BF8310B": {
@@ -637,7 +674,10 @@
     "ApiId": {
      "Ref": "TravelAgentApiA902B284"
     },
-    "AuthorizationType": "NONE",
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "TravelAgentApiCognitoJwtAuthorizerFECC173B"
+    },
     "RouteKey": "POST /approval",
     "Target": {
      "Fn::Join": [
@@ -658,7 +698,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12PTYrDMAyFz9K9ozZpL9AWhpnNMKQHCKrjBuXHDpHSUIzvPtims5jV956QHk8VVKcDHHa4caHboRjpDv4mqAeFGzd+xOneYmNda3qG74SP1WohZxXhBL52o1HXh038cSPpV7RZBcXHBpmNMJwjFB/hsurByAXZqBwP/vqwf6nx2CwTMZOzQeFMHYrZ8PWswH+KzOeZ4lJEtDfBLjXIIo5qt0pWX1ZMt+A7+J9NeyGoVC2ek+2Cis9Cz/tndYKyhHLXM1GxrFZoMlBn/gIX9TV2OQEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12Q3WrDMAxGn6X3jtakfYG0MLabMdIHCGriZsqPHSy5oQt+92GHdbCr831GPggVUBz3sN/hwlnTDtlIV1gvgs2gcOF6HXG6tlgb2+qe4SPh1ZtGyBpFOMFa2VGr880kftqRmkesWwqKDzUya2EoIxQf4OSbQcsJWatND+v5Zp7W+Fm7iZjJmqBwpg5FL/i4F7C+iczlTHEoItaLYJc22EJ8qqyXLb0b0Z3DX/G/+jdXevmyjr61S+pnC0GlvaObTBdUvAT0/HIvjpDnkO96JsqcN0KThmrjD5KMOb9WAQAA"
    },
    "Metadata": {
     "aws:cdk:path": "ContosoTravelComputeStack/CDKMetadata/Default"

@@ -2,6 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib'
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito'
 import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2'
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations'
+import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { Table } from 'aws-cdk-lib/aws-dynamodb'
@@ -67,16 +68,23 @@ export class ComputeStack extends Stack {
       apiName: 'contoso-travel-agent-api'
     })
 
+    const issuer = `https://cognito-idp.${this.region}.amazonaws.com/${props.userPool.userPoolId}`
+    const jwtAuthorizer = new HttpJwtAuthorizer('CognitoJwtAuthorizer', issuer, {
+      jwtAudience: [props.userPoolClient.userPoolClientId]
+    })
+
     this.api.addRoutes({
       path: '/chat',
       methods: [HttpMethod.POST],
-      integration: new HttpLambdaIntegration('ChatIntegration', chatHandler)
+      integration: new HttpLambdaIntegration('ChatIntegration', chatHandler),
+      authorizer: jwtAuthorizer
     })
 
     this.api.addRoutes({
       path: '/approval',
       methods: [HttpMethod.POST],
-      integration: new HttpLambdaIntegration('ApprovalIntegration', approvalHandler)
+      integration: new HttpLambdaIntegration('ApprovalIntegration', approvalHandler),
+      authorizer: jwtAuthorizer
     })
   }
 }

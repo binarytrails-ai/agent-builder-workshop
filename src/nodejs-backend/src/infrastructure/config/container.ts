@@ -19,6 +19,10 @@ export async function configureContainer(): Promise<Container> {
   // Configuration - load config first
   const configService = AWSConfigService.getInstance()
   await configService.loadConfig()
+  const configValidation = configService.validateConfig()
+  if (!configValidation.isValid) {
+    throw new Error(`Invalid application configuration: ${configValidation.missingKeys.join(', ')}`)
+  }
   container.bind(TYPES.AppConfig).toConstantValue(configService)
 
   // Logging

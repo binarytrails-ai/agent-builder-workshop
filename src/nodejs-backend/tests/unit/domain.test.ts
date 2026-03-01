@@ -28,6 +28,7 @@ describe('TravelConfig', () => {
       mem0Endpoint: 'https://api.mem0.ai',
       jwtSecret: 'test-secret',
       cognitoUserPoolId: 'us-east-1_test',
+      cognitoUserPoolClientId: 'test-client-id',
       environment: 'development'
     }
 

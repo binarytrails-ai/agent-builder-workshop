@@ -49,6 +49,10 @@ describe('AWSConfigService', () => {
     delete process.env.USE_GITHUB_MODELS
     delete process.env.AWS_REGION
     delete process.env.DYNAMODB_TABLE_PREFIX
+
+    process.env.JWT_SECRET = 'test-jwt-secret-value'
+    process.env.COGNITO_USER_POOL_ID = 'us-east-1_testpool'
+    process.env.COGNITO_USER_POOL_CLIENT_ID = 'test-client-id'
   })
 
   it('should create singleton instance', () => {
@@ -88,6 +92,7 @@ describe('AWSConfigService', () => {
     process.env.NODE_ENV = 'production'
     process.env.JWT_SECRET = 'secure-production-secret'
     process.env.COGNITO_USER_POOL_ID = 'us-east-1_abcd1234'
+    process.env.COGNITO_USER_POOL_CLIENT_ID = 'prod-client-id'
     
     // Create fresh instance to load new env vars
     const prodConfigService = AWSConfigService.getInstance()
@@ -99,10 +104,11 @@ describe('AWSConfigService', () => {
     expect(validation.missingKeys).toHaveLength(0)
   })
 
-  it('should detect missing production configuration', async () => {
-    // Set production environment but keep development JWT secret
+  it('should detect missing required configuration', async () => {
+    // Set production environment and remove required auth configuration
     process.env.NODE_ENV = 'production'
-    process.env.JWT_SECRET = 'development-secret-change-in-production'
+    delete process.env.JWT_SECRET
+    delete process.env.COGNITO_USER_POOL_CLIENT_ID
     
     // Create fresh instance to load new env vars
     const prodConfigService = AWSConfigService.getInstance()
@@ -110,7 +116,8 @@ describe('AWSConfigService', () => {
     const validation = prodConfigService.validateConfig()
     
     expect(validation.isValid).toBe(false)
-    expect(validation.missingKeys).toContain('jwtSecret (using development value)')
+    expect(validation.missingKeys).toContain('jwtSecret')
+    expect(validation.missingKeys).toContain('cognitoUserPoolClientId')
   })
 
   it('should provide DynamoDB configuration', async () => {

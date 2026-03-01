@@ -49,8 +49,9 @@ export class AWSConfigService {
       mem0Endpoint: env['MEM0_ENDPOINT'] || 'https://api.mem0.ai',
 
       // Lambda/API configuration
-      jwtSecret: env['JWT_SECRET'] || 'development-secret-change-in-production',
-      cognitoUserPoolId: env['COGNITO_USER_POOL_ID'] || 'us-east-1_development',
+      jwtSecret: env['JWT_SECRET'] || '',
+      cognitoUserPoolId: env['COGNITO_USER_POOL_ID'] || '',
+      cognitoUserPoolClientId: env['COGNITO_USER_POOL_CLIENT_ID'] || '',
       environment: (env['NODE_ENV'] as TravelConfig['environment']) || 'development'
     }
 
@@ -92,31 +93,27 @@ export class AWSConfigService {
       return { isValid: false, missingKeys: ['Configuration not loaded'] }
     }
 
-    const requiredForProduction: Array<keyof TravelConfig> = [
+    const requiredForAllEnvironments: Array<keyof TravelConfig> = [
       'awsRegion',
       'bedrockModel',
       'dynamoDBTablePrefix',
       'jwtSecret',
-      'cognitoUserPoolId'
+      'cognitoUserPoolId',
+      'cognitoUserPoolClientId'
     ]
 
     const missingKeys: string[] = []
 
-    if (this.config.environment === 'production') {
-      for (const key of requiredForProduction) {
-        const value = this.config[key]
-        if (!value || (typeof value === 'string' && value.includes('development'))) {
-          missingKeys.push(key)
-        }
+    for (const key of requiredForAllEnvironments) {
+      const value = this.config[key]
+      if (!value || (typeof value === 'string' && value.trim().length === 0)) {
+        missingKeys.push(key)
       }
+    }
 
-      // Additional production checks
-      if (this.config.jwtSecret === 'development-secret-change-in-production') {
-        missingKeys.push('jwtSecret (using development value)')
-      }
-      
+    if (this.config.environment === 'production') {
       if (this.config.cognitoUserPoolId.includes('development')) {
-        missingKeys.push('cognitoUserPoolId (using development value)')
+        missingKeys.push('cognitoUserPoolId (looks non-production)')
       }
     }
 
@@ -160,6 +157,7 @@ export class AWSConfigService {
     return {
       jwtSecret: config.jwtSecret,
       cognitoUserPoolId: config.cognitoUserPoolId,
+      cognitoUserPoolClientId: config.cognitoUserPoolClientId,
       region: config.awsRegion
     }
   }

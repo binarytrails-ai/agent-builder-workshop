@@ -228,7 +228,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/44b077eeaf4c9de53926f7a88c00786fbf01976afdc4bd2d49ec09eb8bf627e0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/11b26ca3c53141a9356cda14684c5acbc311382c9642ddd9e9b3ab5a480532d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -310,6 +310,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TravelAgentApiPOSTchat22E5CE2B"
+          }
+        ],
+        "/ContosoTravelComputeStack/TravelAgentApi/CognitoJwtAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TravelAgentApiCognitoJwtAuthorizerFECC173B"
           }
         ],
         "/ContosoTravelComputeStack/TravelAgentApi/POST--approval/ApprovalIntegration/Resource": [
