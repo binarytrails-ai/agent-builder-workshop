@@ -9,6 +9,12 @@
 #:package Microsoft.Extensions.AI@10.3.0
 #:package Microsoft.Extensions.AI.OpenAI@10.3.0
 #:package DotNetEnv@3.1.1
+#:package OpenTelemetry@1.10.0
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.10.0
+#:package OpenTelemetry.Extensions.Hosting@1.10.0
+#:package Microsoft.Extensions.Logging@10.0.0
+#:package Microsoft.Extensions.Logging.Console@10.0.0
+#:package Microsoft.Extensions.DependencyInjection@10.0.0
 
 using System.ComponentModel;
 using System.Text.Json;
@@ -17,20 +23,35 @@ using Azure.Identity;
 using DotNetEnv;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.ClientModel;
+
+const string SourceName = "TravelAssistant";
+const string ServiceName = "TravelAssistant";
 
 // Configure JSON serialization for Azure SDK compatibility with .NET 10
 AppContext.SetSwitch("System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault", true);
-Console.WriteLine("=== Lab 03: Tools and Function Calling ===\n");
 
 // Step 1: Load environment variables
 LoadEnv();
 
-// Step 2: Create chat client
-var chatClient = CreateChatClient();
-if (chatClient == null) return;
+// Step 2: Initialize OpenTelemetry
+var (loggerFactory, appLogger, tracerProvider) = InitTelemetry(ServiceName);
 
-// Step 3: Define tools that the agent can use
+// Step 3: Create chat client
+var chatClient = CreateChatClient(appLogger);
+if (chatClient == null)
+{
+    tracerProvider.Dispose();
+    return;
+}
+
+// Step 4: Define tools that the agent can use
 var tools = new List<AITool>
 {
     AIFunctionFactory.Create(GetCurrentDate),
@@ -39,9 +60,9 @@ var tools = new List<AITool>
     AIFunctionFactory.Create(SearchFlights)
 };
 
-Console.WriteLine($"[INFO] Created {tools.Count} tools for the agent\n");
+appLogger.LogInformation("Created {ToolCount} tools for the agent", tools.Count);
 
-// Step 4: Create agent with tools
+// Step 5: Create agent with tools
 var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
     Name = "TravelAssistant",
@@ -57,15 +78,32 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     }
 });
 
-Console.WriteLine("Agent created with tools successfully\n");
+agent.AsBuilder()
+.UseOpenTelemetry(SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+.UseLogging(loggerFactory)
+.Build();
 
-// Step 5: Run conversation with tool usage
-AgentSession session = await agent.CreateSessionAsync();
-Console.WriteLine("User: Find me flights from Melbourne to Tokyo for next Friday\n");
-var response1 = await agent.RunAsync("Find me flights from Melbourne to Tokyo", session);
-Console.WriteLine($"Agent: {response1.Text}\n");
+appLogger.LogInformation("Agent created with tools successfully");
 
-Console.WriteLine(new string('-', 60) + "\n");
+// Step 6: Run conversation with tool usage
+try
+{
+    AgentSession session = await agent.CreateSessionAsync();
+
+    var userInput1 = "Find me flights from Melbourne to Tokyo";
+    appLogger.LogInformation("User: {UserInput}", userInput1);
+
+    var response1 = await agent.RunAsync(userInput1, session);
+    appLogger.LogInformation("Agent: {AgentResponse}", response1.Text);
+}
+catch (Exception ex)
+{
+    appLogger.LogError(ex, "Agent interaction failed: {ErrorMessage}", ex.Message);
+}
+finally
+{
+    tracerProvider.Dispose();
+}
 
 
 // ==================== Tool Definitions ====================
@@ -217,17 +255,15 @@ void LoadEnv()
             var envFile = Path.Combine(currentDir, ".env");
             if (File.Exists(envFile))
             {
-                Console.WriteLine($"[INFO] Loading environment from: {envFile}");
                 Env.Load(envFile);
                 return;
             }
         }
         currentDir = Directory.GetParent(currentDir)?.FullName;
     }
-    Console.WriteLine("[WARNING] No .env file found. Using system environment variables.");
 }
 
-IChatClient? CreateChatClient()
+IChatClient? CreateChatClient(ILogger appLogger)
 {
     var azureEndpoint = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_ENDPOINT");
     var azureApiKey = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_KEY");
@@ -239,20 +275,60 @@ IChatClient? CreateChatClient()
 
     if (!string.IsNullOrEmpty(azureEndpoint) && !string.IsNullOrEmpty(azureApiKey))
     {
-        Console.WriteLine($"Using Azure OpenAI ({modelName})\n");
+        appLogger.LogInformation("Using Azure OpenAI with model: {ModelName}", modelName);
         var azureClient = new AzureOpenAIClient(new Uri(azureEndpoint), new ApiKeyCredential(azureApiKey));
-        return azureClient.GetChatClient(modelName).AsIChatClient();
+        return azureClient.GetChatClient(modelName)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+            .Build();
     }
     else if (!string.IsNullOrEmpty(githubToken))
     {
-        Console.WriteLine($"Using GitHub Models ({githubModelId})\n");
+        appLogger.LogInformation("Using GitHub Models with model: {ModelId}", githubModelId);
         var githubClient = new AzureOpenAIClient(new Uri(githubBaseUrl), new ApiKeyCredential(githubToken));
-        return githubClient.GetChatClient(githubModelId).AsIChatClient();
+        return githubClient.GetChatClient(githubModelId)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+            .Build();
     }
     else
     {
-        Console.WriteLine("ERROR: No valid credentials found.");
-        Console.WriteLine("Configure AZURE_AI_SERVICES_ENDPOINT + AZURE_AI_SERVICES_KEY or GITHUB_TOKEN");
+        appLogger.LogError("No valid credentials found.");
         return null;
     }
+}
+
+(ILoggerFactory, ILogger<Program>, TracerProvider) InitTelemetry(string serviceName)
+{
+    var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://localhost:4317";
+
+    var tracerProvider = Sdk.CreateTracerProviderBuilder()
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(serviceName, serviceVersion: "1.0.0"))
+        .AddSource(SourceName)
+        .AddSource("Microsoft.Agents.AI")
+        .AddSource("Microsoft.Extensions.AI")
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint))
+        .Build();
+
+    var serviceCollection = new ServiceCollection();
+    serviceCollection.AddLogging(loggingBuilder => loggingBuilder
+        .SetMinimumLevel(LogLevel.Information)
+        .AddConsole()
+        .AddOpenTelemetry(options =>
+        {
+            options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService(serviceName, serviceVersion: "1.0.0"));
+            options.AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri(otlpEndpoint));
+            options.IncludeScopes = true;
+            options.IncludeFormattedMessage = true;
+        }));
+
+    var serviceProvider = serviceCollection.BuildServiceProvider();
+    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+    var appLogger = loggerFactory.CreateLogger<Program>();
+
+    return (loggerFactory, appLogger, tracerProvider);
 }

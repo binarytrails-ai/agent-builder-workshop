@@ -1,5 +1,5 @@
 // Lab 01: Basic Agent
-// Learn how to create and run a simple AI agent using Microsoft Agent Framework
+// Learn how to create and run a simple AI agent
 
 // Add NuGet package references using file-based app syntax (#:package Name@Version)
 #:package Azure.AI.OpenAI@2.1.0
@@ -9,23 +9,39 @@
 #:package Microsoft.Extensions.AI@10.3.0
 #:package Microsoft.Extensions.AI.OpenAI@10.3.0
 #:package DotNetEnv@3.1.1
+#:package OpenTelemetry@1.10.0
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.10.0
+#:package OpenTelemetry.Extensions.Hosting@1.10.0
+#:package Microsoft.Extensions.Logging@10.0.0
+#:package Microsoft.Extensions.Logging.Console@10.0.0
+#:package Microsoft.Extensions.DependencyInjection@10.0.0
 
 using Azure.AI.OpenAI;
 using DotNetEnv;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.ClientModel;
 
-Console.WriteLine("=== Lab 01: Basic Agent ===\n");
+const string SourceName = "TravelAssistant";
+const string ServiceName = "TravelAssistant";
 
 // Step 1: Load environment variables from the workspace root .env file
 LoadEnv();
 
-// Step 2: Create chat client
-var chatClient = CreateChatClient();
+// Step 2: Initialize OpenTelemetry
+var (loggerFactory, appLogger, tracerProvider) = InitTelemetry(ServiceName);
+
+// Step 3: Create chat client
+var chatClient = CreateChatClient(appLogger);
 if (chatClient == null) return;
 
-// Step 3: Create a simple agent
+// Step 4: Create a simple agent
 var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
     Name = "TravelAssistant",
@@ -37,36 +53,46 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     }
 });
 
-Console.WriteLine("[SUCCESS] Agent created successfully\n");
+agent.AsBuilder()
+.UseOpenTelemetry(SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+.UseLogging(loggerFactory)
+.Build();
 
-// Step 4: Run the agent with multi-turn conversation
+// Step 5: Run the agent with multi-turn conversation
 try
 {
-    // Create a new session for the conversation.
+    // Create a new session for the conversation
     AgentSession session = await agent.CreateSessionAsync();
 
     // First message
-    Console.WriteLine("User: What are some must-visit places in Australia?\n");
-    var response1 = await agent.RunAsync("What are some must-visit places in Australia?", session);
-    Console.WriteLine($"Agent: {response1}\n");
+    var userInput1 = "What are some must-visit places in Australia?";
+    appLogger.LogInformation("User: {UserInput}", userInput1);
+
+    var response1 = await agent.RunAsync(userInput1, session);
+    appLogger.LogInformation("Agent: {AgentResponse}", response1);
 
     // Second message - follow-up question to demonstrate multi-turn chat
-    Console.WriteLine("User: Which one would you recommend for families with kids?\n");
-    var response2 = await agent.RunAsync("Which one would you recommend for families with kids?", session);
-    Console.WriteLine($"Agent: {response2}");
+    var userInput2 = "Which one would you recommend for families with kids?";
+    appLogger.LogInformation("User: {UserInput}", userInput2);
+
+    var response2 = await agent.RunAsync(userInput2, session);
+    appLogger.LogInformation("Agent: {AgentResponse}", response2);
+    appLogger.LogInformation("Agent response completed");
+
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"[ERROR] Failed to get response: {ex.Message}");
-    Console.WriteLine($"Details: {ex}");
+    appLogger.LogError(ex, "Agent interaction failed: {ErrorMessage}", ex.Message);
 }
-
-Console.WriteLine("\n" + new string('=', 60));
+finally
+{
+    tracerProvider.Dispose();
+}
 
 
 // ==================== Helper Methods ====================
 
-IChatClient? CreateChatClient()
+IChatClient? CreateChatClient(ILogger appLogger)
 {
     var azureEndpoint = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_ENDPOINT");
     var azureApiKey = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_KEY");
@@ -78,20 +104,27 @@ IChatClient? CreateChatClient()
 
     if (!string.IsNullOrEmpty(azureEndpoint) && !string.IsNullOrEmpty(azureApiKey))
     {
-        Console.WriteLine($"Using Azure OpenAI ({modelName})\n");
+        appLogger.LogInformation("Using Azure OpenAI with model: {ModelName}", modelName);
         var azureClient = new AzureOpenAIClient(new Uri(azureEndpoint), new ApiKeyCredential(azureApiKey));
-        return azureClient.GetChatClient(modelName).AsIChatClient();
+        return azureClient.GetChatClient(modelName)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+            .Build();
     }
     else if (!string.IsNullOrEmpty(githubToken))
     {
-        Console.WriteLine($"Using GitHub Models ({githubModelId})\n");
+        appLogger.LogInformation("Using GitHub Models with model: {ModelId}", githubModelId);
         var githubClient = new AzureOpenAIClient(new Uri(githubBaseUrl), new ApiKeyCredential(githubToken));
-        return githubClient.GetChatClient(githubModelId).AsIChatClient();
+        return githubClient.GetChatClient(githubModelId)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+            .Build();
     }
     else
     {
-        Console.WriteLine("ERROR: No valid credentials found.");
-        Console.WriteLine("Configure AZURE_AI_SERVICES_ENDPOINT + AZURE_AI_SERVICES_KEY or GITHUB_TOKEN");
+        appLogger.LogError("No valid credentials found.");
         return null;
     }
 }
@@ -113,4 +146,40 @@ void LoadEnv()
         }
         currentDir = Directory.GetParent(currentDir)?.FullName;
     }
+}
+
+(ILoggerFactory, ILogger<Program>, TracerProvider) InitTelemetry(string serviceName)
+{
+    // Configure OpenTelemetry for Aspire dashboard
+    var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://localhost:4317";
+
+    // Setup tracing with OpenTelemetry
+    var tracerProvider = Sdk.CreateTracerProviderBuilder()
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(serviceName, serviceVersion: "1.0.0"))
+        .AddSource(SourceName)
+        .AddSource("Microsoft.Agents.AI")
+        .AddSource("Microsoft.Extensions.AI")
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint))
+        .Build();
+
+    // Setup structured logging with OpenTelemetry
+    var serviceCollection = new ServiceCollection();
+    serviceCollection.AddLogging(loggingBuilder => loggingBuilder
+        .SetMinimumLevel(LogLevel.Information)
+        .AddConsole()
+        .AddOpenTelemetry(options =>
+        {
+            options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService(serviceName, serviceVersion: "1.0.0"));
+            options.AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri(otlpEndpoint));
+            options.IncludeScopes = true;
+            options.IncludeFormattedMessage = true;
+        }));
+
+    var serviceProvider = serviceCollection.BuildServiceProvider();
+    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+    var appLogger = loggerFactory.CreateLogger<Program>();
+
+    return (loggerFactory, appLogger, tracerProvider);
 }

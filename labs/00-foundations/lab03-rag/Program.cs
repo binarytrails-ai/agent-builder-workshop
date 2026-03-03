@@ -13,35 +13,55 @@
 #:package Microsoft.Extensions.AI@10.3.0
 #:package Microsoft.Extensions.AI.OpenAI@10.3.0
 #:package DotNetEnv@3.1.1
+#:package OpenTelemetry@1.10.0
+#:package OpenTelemetry.Exporter.OpenTelemetryProtocol@1.10.0
+#:package OpenTelemetry.Extensions.Hosting@1.10.0
+#:package Microsoft.Extensions.Logging@10.0.0
+#:package Microsoft.Extensions.Logging.Console@10.0.0
+#:package Microsoft.Extensions.DependencyInjection@10.0.0
 
 using Azure.AI.OpenAI;
 using DotNetEnv;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.ClientModel;
+
+const string SourceName = "TravelAssistant";
+const string ServiceName = "TravelAssistant";
 
 // Configure JSON serialization for Azure SDK compatibility with .NET 10
 AppContext.SetSwitch("System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault", true);
 
-Console.WriteLine("=== Lab 03: Travel Assistant with RAG ===\n");
-
 // Step 1: Load environment variables
 LoadEnv();
 
-// Step 2: Create chat client and embedding generator
-var (chatClient, embeddingGenerator) = CreateClients();
-if (chatClient == null || embeddingGenerator == null) return;
+// Step 2: Initialize OpenTelemetry
+var (loggerFactory, appLogger, tracerProvider) = InitTelemetry(ServiceName);
 
-// Step 3: Load visa policy documents into vector store
+// Step 3: Create chat client and embedding generator
+var (chatClient, embeddingGenerator) = CreateClients(appLogger);
+if (chatClient == null || embeddingGenerator == null)
+{
+    tracerProvider.Dispose();
+    return;
+}
+
+// Step 4: Load visa policy documents into vector store
 var workspaceRoot = Directory.GetCurrentDirectory();
 var japanVisaPolicyPath = Path.Combine(workspaceRoot, "data", "visa-policy-japan.md");
 var canadaVisaPolicyPath = Path.Combine(workspaceRoot, "data", "visa-policy-canada.md");
 
 TextSearchStore textSearchStore = new(embeddingGenerator);
-await UploadDocumentationFromFileAsync(japanVisaPolicyPath, "Japan Visa Policy", textSearchStore, 2000, 200);
-await UploadDocumentationFromFileAsync(canadaVisaPolicyPath, "Canada Visa Policy", textSearchStore, 2000, 200);
+await UploadDocumentationFromFileAsync(japanVisaPolicyPath, "Japan Visa Policy", textSearchStore, 2000, 200, appLogger);
+await UploadDocumentationFromFileAsync(canadaVisaPolicyPath, "Canada Visa Policy", textSearchStore, 2000, 200, appLogger);
 
-// Step 4: Create search adapter for TextSearchProvider
+// Step 5: Create search adapter for TextSearchProvider
 Func<string, CancellationToken, Task<IEnumerable<TextSearchProvider.TextSearchResult>>> SearchAdapter = async (text, ct) =>
 {
     var searchResults = await textSearchStore.SearchAsync(text, 5, ct);
@@ -54,7 +74,7 @@ Func<string, CancellationToken, Task<IEnumerable<TextSearchProvider.TextSearchRe
     });
 };
 
-// Step 5: Configure TextSearchProvider options
+// Step 6: Configure TextSearchProvider options
 TextSearchProviderOptions textSearchOptions = new()
 {
     // Run the search prior to every model invocation
@@ -65,7 +85,7 @@ TextSearchProviderOptions textSearchOptions = new()
     RecentMessageMemoryLimit = 5
 };
 
-// Step 6: Create agent with RAG capabilities
+// Step 7: Create agent with RAG capabilities
 var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
     Name = "TravelAssistant",
@@ -77,24 +97,42 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     AIContextProviders = [new TextSearchProvider(SearchAdapter, textSearchOptions)]
 });
 
-Console.WriteLine("Agent created successfully\n");
+agent.AsBuilder()
+.UseOpenTelemetry(SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+.UseLogging(loggerFactory)
+.Build();
 
-// Step 7: Run conversation
-AgentSession session = await agent.CreateSessionAsync();
+appLogger.LogInformation("Agent created successfully");
 
-Console.WriteLine("User: Do I need a visa to visit Japan if I'm a Australian citizen?\n");
-var response1 = await agent.RunAsync("Do I need a visa to visit Japan if I'm a Australian citizen?", session);
-Console.WriteLine($"Agent: {response1.Text}\n");
-Console.WriteLine(new string('-', 60) + "\n");
+// Step 8: Run conversation
+try
+{
+    AgentSession session = await agent.CreateSessionAsync();
 
-Console.WriteLine("User: What about Canada?\n");
-var response2 = await agent.RunAsync("What about Canada?", session);
-Console.WriteLine($"Agent: {response2.Text}\n");
-Console.WriteLine(new string('-', 60) + "\n");
+    var userInput1 = "Do I need a visa to visit Japan if I'm a Australian citizen?";
+    appLogger.LogInformation("User: {UserInput}", userInput1);
+
+    var response1 = await agent.RunAsync(userInput1, session);
+    appLogger.LogInformation("Agent: {AgentResponse}", response1.Text);
+
+    var userInput2 = "What about Canada?";
+    appLogger.LogInformation("User: {UserInput}", userInput2);
+
+    var response2 = await agent.RunAsync(userInput2, session);
+    appLogger.LogInformation("Agent: {AgentResponse}", response2.Text);
+}
+catch (Exception ex)
+{
+    appLogger.LogError(ex, "Agent interaction failed: {ErrorMessage}", ex.Message);
+}
+finally
+{
+    tracerProvider.Dispose();
+}
 
 // ==================== Helper Methods ====================
 
-(IChatClient?, IEmbeddingGenerator<string, Embedding<float>>?) CreateClients()
+(IChatClient?, IEmbeddingGenerator<string, Embedding<float>>?) CreateClients(ILogger appLogger)
 {
     var azureEndpoint = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_ENDPOINT");
     var azureApiKey = Environment.GetEnvironmentVariable("AZURE_AI_SERVICES_KEY");
@@ -108,26 +146,33 @@ Console.WriteLine(new string('-', 60) + "\n");
 
     if (!string.IsNullOrEmpty(azureEndpoint) && !string.IsNullOrEmpty(azureApiKey))
     {
-        Console.WriteLine($"Using Azure OpenAI ({modelName})\n");
+        appLogger.LogInformation("Using Azure OpenAI with model: {ModelName}", modelName);
         var azureClient = new AzureOpenAIClient(new Uri(azureEndpoint), new ApiKeyCredential(azureApiKey));
         return (
-            azureClient.GetChatClient(modelName).AsIChatClient(),
+            azureClient.GetChatClient(modelName)
+                .AsIChatClient()
+                .AsBuilder()
+                .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+                .Build(),
             azureClient.GetEmbeddingClient(embeddingModelName).AsIEmbeddingGenerator()
         );
     }
     else if (!string.IsNullOrEmpty(githubToken))
     {
-        Console.WriteLine($"Using GitHub Models ({githubModelId})\n");
+        appLogger.LogInformation("Using GitHub Models with model: {ModelId}", githubModelId);
         var githubClient = new AzureOpenAIClient(new Uri(githubBaseUrl), new ApiKeyCredential(githubToken));
         return (
-            githubClient.GetChatClient(githubModelId).AsIChatClient(),
+            githubClient.GetChatClient(githubModelId)
+                .AsIChatClient()
+                .AsBuilder()
+                .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+                .Build(),
             githubClient.GetEmbeddingClient(githubEmbeddingModelId).AsIEmbeddingGenerator()
         );
     }
     else
     {
-        Console.WriteLine("[ERROR] No API credentials found");
-        Console.WriteLine("Please set AZURE_AI_SERVICES_ENDPOINT and AZURE_AI_SERVICES_KEY or GITHUB_TOKEN\n");
+        appLogger.LogError("No API credentials found");
         return (null, null);
     }
 }
@@ -151,16 +196,50 @@ void LoadEnv()
     }
 }
 
+(ILoggerFactory, ILogger<Program>, TracerProvider) InitTelemetry(string serviceName)
+{
+    var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://localhost:4317";
+
+    var tracerProvider = Sdk.CreateTracerProviderBuilder()
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(serviceName, serviceVersion: "1.0.0"))
+        .AddSource(SourceName)
+        .AddSource("Microsoft.Agents.AI")
+        .AddSource("Microsoft.Extensions.AI")
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint))
+        .Build();
+
+    var serviceCollection = new ServiceCollection();
+    serviceCollection.AddLogging(loggingBuilder => loggingBuilder
+        .SetMinimumLevel(LogLevel.Information)
+        .AddConsole()
+        .AddOpenTelemetry(options =>
+        {
+            options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService(serviceName, serviceVersion: "1.0.0"));
+            options.AddOtlpExporter(otlpOptions => otlpOptions.Endpoint = new Uri(otlpEndpoint));
+            options.IncludeScopes = true;
+            options.IncludeFormattedMessage = true;
+        }));
+
+    var serviceProvider = serviceCollection.BuildServiceProvider();
+    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+    var appLogger = loggerFactory.CreateLogger<Program>();
+
+    return (loggerFactory, appLogger, tracerProvider);
+}
+
 static async Task UploadDocumentationFromFileAsync(
     string filePath,
     string sourceName,
     TextSearchStore store,
     int chunkSize,
-    int overlap)
+    int overlap,
+    ILogger appLogger)
 {
     if (!File.Exists(filePath))
     {
-        Console.WriteLine($"[ERROR] File not found: {filePath}\n");
+        appLogger.LogError("File not found: {FilePath}", filePath);
         return;
     }
 
