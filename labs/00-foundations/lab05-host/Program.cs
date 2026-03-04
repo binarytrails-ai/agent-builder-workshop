@@ -5,12 +5,17 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 using Microsoft.Extensions.AI;
 using OpenAI;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.ClientModel;
+
+const string SourceName = "TravelAssistant";
+const string ServiceName = "TravelAssistant";
 
 // Configure JSON serialization for Azure SDK compatibility
 AppContext.SetSwitch("System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault", true);
-
-Console.WriteLine("=== Lab 05: Hosting Agents as Web Services ===\n");
 
 // Load environment variables
 LoadEnvironmentVariables();
@@ -18,7 +23,20 @@ LoadEnvironmentVariables();
 // Create ASP.NET Core web application
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging
+// Configure OpenTelemetry
+var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://localhost:4317";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService(ServiceName, serviceVersion: "1.0.0"))
+    .WithTracing(tracing => tracing
+        .AddSource(SourceName)
+        .AddSource("Microsoft.Agents.AI")
+        .AddSource("Microsoft.Extensions.AI")
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint)))
+    .WithLogging(logging => logging
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint)));
+
+// Configure console logging
 builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();
@@ -55,8 +73,15 @@ var tools = new List<AITool>
 
 Console.WriteLine($"[INFO] Created {tools.Count} tools for the agent\n");
 
-// Create the travel agent directly
-var travelAgent = chatClient.AsAIAgent(new ChatClientAgentOptions
+// Build the application first to get services
+var app = builder.Build();
+
+// Get logger factory from the built application
+var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+// Create the travel agent
+AIAgent travelAgent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
     Name = "TravelAssistant",
     ChatOptions = new()
@@ -76,29 +101,29 @@ var travelAgent = chatClient.AsAIAgent(new ChatClientAgentOptions
     }
 });
 
-Console.WriteLine("[INFO] Travel Assistant Agent created successfully\n");
+travelAgent = travelAgent.AsBuilder()
+    .UseOpenTelemetry(SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+    .UseLogging(loggerFactory)
+    .Build();
 
-// Build the application
-var app = builder.Build();
+Console.WriteLine("[INFO] Travel Assistant Agent created successfully\n");
 
 // Configure middleware
 app.UseCors();
 
 // Map OpenAI-compatible completions endpoint
 app.MapOpenAIChatCompletions(travelAgent);
-Console.WriteLine("[INFO] Mapped OpenAI completions endpoint at: /v1/chat/completions");
+logger.LogInformation("Mapped OpenAI completions endpoint at: /v1/chat/completions");
 
 // Map AGUI endpoint for interactive development UI
 app.MapAGUI("/agent/travel", travelAgent);
-Console.WriteLine("[INFO] Mapped AGUI endpoint at: /agent/travel");
+logger.LogInformation("Mapped AGUI endpoint at: /agent/travel");
 
 // Display startup information
-Console.WriteLine("\n" + new string('=', 70));
-Console.WriteLine("HOST STARTED - Agent is now available at the following endpoints:");
-Console.WriteLine("  Agent UI:     http://localhost:5000/agent/travel");
-Console.WriteLine("  OpenAI API:   http://localhost:5000/v1/chat/completions");
-Console.WriteLine(new string('=', 70) + "\n");
-Console.WriteLine("Press Ctrl+C to shut down\n");
+logger.LogInformation("HOST STARTED - Agent is now available at the following endpoints:");
+logger.LogInformation("  Agent UI:     http://localhost:5000/agent/travel");
+logger.LogInformation("  OpenAI API:   http://localhost:5000/TravelAssistant/v1/chat/completions");
+logger.LogInformation("Press Ctrl+C to shut down");
 
 // Run the web server
 await app.RunAsync();
@@ -144,7 +169,11 @@ static IChatClient? CreateChatClient()
             var clientOptions = new OpenAIClientOptions { Endpoint = new Uri(baseUrl) };
             var openAiClient = new OpenAIClient(new ApiKeyCredential(token), clientOptions);
             
-            return openAiClient.GetChatClient(modelId).AsIChatClient();
+            return openAiClient.GetChatClient(modelId)
+                .AsIChatClient()
+                .AsBuilder()
+                .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+                .Build();
         }
         else
         {
@@ -161,7 +190,11 @@ static IChatClient? CreateChatClient()
             }
 
             var azureClient = new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(key));
-            return azureClient.GetChatClient(deploymentName).AsIChatClient();
+            return azureClient.GetChatClient(deploymentName)
+                .AsIChatClient()
+                .AsBuilder()
+                .UseOpenTelemetry(sourceName: SourceName, configure: (cfg) => cfg.EnableSensitiveData = true)
+                .Build();
         }
     }
     catch (Exception ex)
