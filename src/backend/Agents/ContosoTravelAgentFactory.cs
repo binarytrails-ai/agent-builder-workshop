@@ -102,7 +102,7 @@ public class ContosoTravelAgentFactory
 
     public async Task<AIAgent> CreateAsync()
     {
-        var agent = _chatClient.AsAIAgent(new ChatClientAgentOptions
+        AIAgent agent = _chatClient.AsAIAgent(new ChatClientAgentOptions
         {
             Name = Constants.AgentName,
             ChatOptions = new()
@@ -113,11 +113,11 @@ public class ContosoTravelAgentFactory
             },
         });
 
-        agent.AsBuilder().UseOpenTelemetry(Constants.ApplicationId, options =>
+        agent = agent.AsBuilder().UseOpenTelemetry(Constants.ApplicationId, options =>
         {
-            // Enable sensitive data logging for tool calls and responses
             options.EnableSensitiveData = true;
         }).UseLogging(_loggerFactory).Build();
+
         return agent;
     }
 }

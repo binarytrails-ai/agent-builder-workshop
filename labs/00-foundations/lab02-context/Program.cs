@@ -55,7 +55,8 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     Name = "TravelAssistant",
     ChatOptions = new()
     {
-        Instructions = "You are a helpful travel assistant. Use the provided travel knowledge to give accurate recommendations.",
+        Instructions = "You are a helpful travel assistant that provides travel recommendations and information. " +
+                      "Be friendly, informative, and concise in your responses.",
         Tools = []
     },
     AIContextProviders = [travelContext]

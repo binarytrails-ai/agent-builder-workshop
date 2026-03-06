@@ -1,6 +1,5 @@
 using ContosoTravelAgent.Host;
 using ContosoTravelAgent.Host.Agents;
-using ContosoTravelAgent.Host.Agents.Workflow;
 using ContosoTravelAgent.Host.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.DevUI;

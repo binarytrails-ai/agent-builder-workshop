@@ -71,7 +71,7 @@ internal sealed class UserProfileMemoryProvider : AIContextProvider
             || string.IsNullOrEmpty(profile.DietaryRequirements);
     }
 
-    public override async ValueTask InvokedAsync(InvokedContext context, CancellationToken cancellationToken = default)
+    protected override async ValueTask StoreAIContextAsync(InvokedContext context, CancellationToken cancellationToken = default)
     {
         if (context.InvokeException is not null)
         {
@@ -92,7 +92,7 @@ internal sealed class UserProfileMemoryProvider : AIContextProvider
                         this._scope.UserId);
                 }
 
-                ChatResponse<UserProfileMemory> result = await this._chatClient.GetResponseAsync<UserProfileMemory>(
+                var result = await this._chatClient.GetResponseAsync<UserProfileMemory>(
                     context.RequestMessages,
                     new ChatOptions
                     {
@@ -266,10 +266,7 @@ internal sealed class UserProfileMemoryProvider : AIContextProvider
         }
     }
 
-    /// <summary>
-    /// Called BEFORE the agent is invoked - inject remembered context
-    /// </summary>
-    public override ValueTask<AIContext> InvokingAsync(InvokingContext context, CancellationToken cancellationToken = default)
+    protected override ValueTask<AIContext> ProvideAIContextAsync(InvokingContext context, CancellationToken cancellationToken = default)
     {
         try
         {
