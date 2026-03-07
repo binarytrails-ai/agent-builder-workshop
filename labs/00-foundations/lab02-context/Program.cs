@@ -221,7 +221,6 @@ Thailand:
 
     public override string StateKey => "TravelKnowledge";
 
-    // Called BEFORE the agent responds - provides context to the agent
     protected override ValueTask<AIContext> ProvideAIContextAsync(InvokingContext context, CancellationToken cancellationToken = default)
     {
         // Provide the hard-coded travel knowledge to the agent

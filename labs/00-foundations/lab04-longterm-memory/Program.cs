@@ -68,7 +68,6 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     {
         Instructions = """
         You are a helpful travel assistant. 
-        You remember user preferences and personalize your recommendations.
         When making suggestions, naturally reference their preferences like:
         "Since you enjoy [preference], I recommend..."
         When you learn new preferences, acknowledge them warmly.
