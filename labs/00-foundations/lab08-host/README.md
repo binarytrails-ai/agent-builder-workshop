@@ -57,17 +57,7 @@ HOST STARTED - Agent is now available at the following endpoints:
 Press Ctrl+C to shut down
 ```
 
-### Step 3: Test the Agent via the Browser UI
-
-Open your browser to: http://localhost:5000/agent/travel
-
-You will see an interactive chat interface. Try asking:
-- "Find me flights from Melbourne to Tokyo for next Friday"
-- "What is today's date?"
-
-Observe how the agent uses tools in real-time to answer your questions.
-
-### Step 4: Test the Agent via the HTTP File
+### Step 3: Test the Agent via the HTTP File
 
 Open `TravelAssistant.http` in VS Code and click **Send Request** next to any of the pre-built requests to call the OpenAI-compatible endpoint directly.
 
