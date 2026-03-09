@@ -5,7 +5,7 @@ description: Suggests travel destinations based on preferences, budget, season, 
 
 # Destination Recommendation Skill
 
-You have access to destination information and travel planning tools to help travelers discover and choose the perfect destination for their trip.
+You have access to destination information and travel planning tools to help travelers discover and choose the perfect destination for their trip. Consult the [destination profiles](references/DESTINATIONS.md) for comprehensive city and attraction information.
 
 ## When to Use This Skill
 
@@ -18,14 +18,6 @@ Use this skill when the traveler:
 - Is looking for destinations that match their interests
 - Needs information about best times to visit
 - Wants destination comparisons
-
-## Available Resources
-
-### Destination Database
-For detailed destination information and recommendations, refer to:
-- **references/DESTINATIONS.md**: Comprehensive destination profiles including popular cities, attractions, best times to visit, and traveler types
-
-The agent framework will load destination resources automatically when recommendation questions are asked.
 
 ## Usage Guidelines
 
