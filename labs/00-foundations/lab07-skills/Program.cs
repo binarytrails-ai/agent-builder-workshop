@@ -57,7 +57,7 @@ if (chatClient == null)
 //   2. Load - full instructions loaded on-demand via load_skill tool
 //   3. Read resources - supplementary files loaded via read_skill_resource tool
 var skillsProvider = new FileAgentSkillsProvider(
-    skillPath: Path.Combine(Directory.GetCurrentDirectory(), "labs/00-foundations/lab07-skills/skills"));
+    skillPath: Path.Combine(AppContext.BaseDirectory, "skills"));
 
 appLogger.LogInformation("FileAgentSkillsProvider created, discovering skills from ./skills directory");
 
@@ -143,7 +143,7 @@ static string GetWeatherForecast([Description("The city name to get weather for"
     var temp = random.Next(-5, 40);
     var condition = conditions[random.Next(conditions.Length)];
     var humidity = random.Next(30, 90);
-
+    
     return $"Weather in {city}: {condition}, {temp}C, Humidity: {humidity}%";
 }
 
