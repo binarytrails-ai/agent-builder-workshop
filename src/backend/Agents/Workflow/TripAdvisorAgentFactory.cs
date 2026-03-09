@@ -140,7 +140,42 @@ public class TripAdvisorAgentFactory
 
     public AIAgent Create()
     {
-        return _chatClient.CreateAIAgent(new ChatClientAgentOptions
+        // Get userId at creation time since agents are created per-request
+        string userId = _httpContextAccessor.HttpContext?.Items["UserId"] as string ?? "default-user";
+
+        var userProfileMemoryProvider = new UserProfileMemoryProvider(
+            _chatClient,
+            new UserProfileMemoryProviderScope
+            {
+                UserId = userId,
+                ApplicationId = Constants.ApplicationId
+            });
+
+        var chatHistoryMemoryProvider = new CosmosDbChatHistoryProvider(
+            _cosmosDatabase.Client,
+            _cosmosDatabase.Id,
+            containerName: "ChatHistory",
+            partitionKeyPath: "/ApplicationId",
+            storageScope: new()
+            {
+                UserId = userId,
+                ApplicationId = Constants.ApplicationId
+            },
+            embeddingGenerator: _embeddingClient.AsIEmbeddingGenerator(),
+            searchScope: new()
+            {
+                UserId = userId,
+                ApplicationId = Constants.ApplicationId
+            },
+            options: new ChatHistoryMemoryProviderOptions()
+            {
+                ContextPrompt = "## Memories\nConsider the following memories when answering user questions:",
+                EnableSensitiveTelemetryData = true,
+                MaxResults = 10
+            },
+            loggerFactory: _loggerFactory);
+
+        return _chatClient.AsAIAgent(new ChatClientAgentOptions
         {
             Name = "trip_advisor_agent",
             Description = "Provides personalized destination recommendations and travel advice for Contoso Travel Agency.",
@@ -154,46 +189,7 @@ public class TripAdvisorAgentFactory
                         AIFunctionFactory.Create(UserContextTools.GetUserContext)
                 ]
             },
-            AIContextProviderFactory = (ctx) =>
-            {
-                // Use ApplicationId and UserId for memory scope
-                string userId = _httpContextAccessor.HttpContext?.Items["UserId"] as string ?? "default-user";
-                var userProfileMemoryProvider = new UserProfileMemoryProvider(
-                    _chatClient,
-                    new UserProfileMemoryProviderScope
-                    {
-                        UserId = userId,
-                        ApplicationId = Constants.ApplicationId
-                    });
-
-                var chatHistoryMemoryProvider = new CosmosDbChatHistoryProvider(
-                    _cosmosDatabase.Client,
-                    _cosmosDatabase.Id,
-                    containerName: "ChatHistory",
-                    partitionKeyPath: "/ApplicationId",
-                    storageScope: new()
-                    {
-                        UserId = userId,
-                        ApplicationId = Constants.ApplicationId
-                    },
-                    embeddingGenerator: _embeddingClient.AsIEmbeddingGenerator(),
-                    searchScope: new()
-                    {
-                        UserId = userId,
-                        ApplicationId = Constants.ApplicationId
-                    },
-                    options: new ChatHistoryMemoryProviderOptions()
-                    {
-                        ContextPrompt = "## Memories\nConsider the following memories when answering user questions:",
-                        EnableSensitiveTelemetryData = true,
-                        MaxResults = 10
-                    },
-                    loggerFactory: _loggerFactory);
-
-
-                return new CompositeMemoryProvider
-                ([userProfileMemoryProvider, chatHistoryMemoryProvider]);
-            }
-        });
+            AIContextProviders = [new CompositeMemoryProvider([userProfileMemoryProvider, chatHistoryMemoryProvider])]
+        }, _loggerFactory);
     }
 }
