@@ -69,6 +69,9 @@ public static class ConfigurationExtensions
         var otlpEndpoint = Env.GetString("OTEL_EXPORTER_OTLP_ENDPOINT")
                            ?? configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
 
+        var applicationInsightsConnectionString = Env.GetString("APPLICATIONINSIGHTS_CONNECTION_STRING")
+                                                 ?? configuration["ApplicationInsights:ConnectionString"];
+
         // Mem0 configuration
         var mem0Endpoint = Env.GetString("MEM0_ENDPOINT")
                           ?? configuration["MEM0_ENDPOINT"]
@@ -130,6 +133,7 @@ public static class ConfigurationExtensions
             AzureAISearchEndpoint = azureSearchEndpoint,
             AzureAISearchAdminKey = azureSearchAdminKey,
             OtelExporterOtlpEndpoint = otlpEndpoint,
+            ApplicationInsightsConnectionString = applicationInsightsConnectionString,
             Mem0Endpoint = mem0Endpoint,
             Mem0ApiKey = mem0ApiKey,
             CosmosDbEndpoint = cosmosDbEndpoint,

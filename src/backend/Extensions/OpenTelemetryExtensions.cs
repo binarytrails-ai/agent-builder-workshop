@@ -13,7 +13,15 @@ public static class OpenTelemetryExtensions
         ContosoTravelAppConfig config)
     {
         var otlpEndpoint = config.OtelExporterOtlpEndpoint ?? "http://localhost:4317";
-        builder.Services.AddApplicationInsightsTelemetry();
+        
+        // Only add Application Insights if connection string is provided
+        if (!string.IsNullOrEmpty(config.ApplicationInsightsConnectionString))
+        {
+            builder.Services.AddApplicationInsightsTelemetry(options =>
+            {
+                options.ConnectionString = config.ApplicationInsightsConnectionString;
+            });
+        }
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource

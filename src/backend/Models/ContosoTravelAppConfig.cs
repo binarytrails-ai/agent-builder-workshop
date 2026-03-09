@@ -24,6 +24,7 @@ public record ContosoTravelAppConfig
     public string? AzureAISearchEndpoint { get; init; }
     public string? AzureAISearchAdminKey { get; init; }
     public string? OtelExporterOtlpEndpoint { get; init; }
+    public string? ApplicationInsightsConnectionString { get; init; }
 
     // Cosmos DB configuration
     public string? CosmosDbEndpoint { get; init; }
