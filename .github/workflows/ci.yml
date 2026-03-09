@@ -4,7 +4,6 @@ on:
     branches:
       - master
       - main
-      - 'releases/*'
 permissions:
   contents: write
 jobs:
