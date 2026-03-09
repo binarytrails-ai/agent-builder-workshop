@@ -1,11 +1,17 @@
+// Copyright (c) Microsoft. All rights reserved.
+
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ContosoTravelAgent.Host.Models;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
-namespace ContosoTravelAgent.Host.Agents;
-
+/// <summary>
+/// A delegating agent that handles function approval requests on the server side.
+/// Transforms between FunctionApprovalRequestContent/FunctionApprovalResponseContent
+/// and the request_approval tool call pattern for client communication.
+/// </summary>
 internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -16,32 +22,31 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
         this._jsonSerializerOptions = jsonSerializerOptions;
     }
 
-    protected override Task<AgentRunResponse> RunCoreAsync(
+    protected override Task<AgentResponse> RunCoreAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread = null,
+        AgentSession? session = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return this.RunCoreStreamingAsync(messages, thread, options, cancellationToken)
-            .ToAgentRunResponseAsync(cancellationToken);
+        return this.RunCoreStreamingAsync(messages, session, options, cancellationToken)
+            .ToAgentResponseAsync(cancellationToken);
     }
 
-    protected override async IAsyncEnumerable<AgentRunResponseUpdate> RunCoreStreamingAsync(
+    protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread = null,
+        AgentSession? session = null,
         AgentRunOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        List<ChatMessage> processedMessages = new List<ChatMessage>();
-        processedMessages = ProcessIncomingFunctionApprovals(messages.ToList(), this._jsonSerializerOptions);
+        // Process and transform incoming approval responses from client, creating a new message list
+        var processedMessages = ProcessIncomingFunctionApprovals(messages.ToList(), this._jsonSerializerOptions);
 
         // Run the inner agent and intercept any approval requests
         await foreach (var update in this.InnerAgent.RunStreamingAsync(
-                processedMessages, thread, options, cancellationToken).ConfigureAwait(false))
+            processedMessages, session, options, cancellationToken).ConfigureAwait(false))
         {
             yield return ProcessOutgoingApprovalRequests(update, this._jsonSerializerOptions);
         }
-
     }
 
 #pragma warning disable MEAI001 // Type is for evaluation purposes only
@@ -49,7 +54,7 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
     {
         if (toolCall.Name != "request_approval" || toolCall.Arguments == null)
         {
-            throw new InvalidOperationException("Invalid tool call");
+            throw new InvalidOperationException("Invalid request_approval tool call");
         }
 
         var request = toolCall.Arguments.TryGetValue("request", out var reqObj) &&
@@ -167,8 +172,8 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
         return result ?? messages;
     }
 
-    private static AgentRunResponseUpdate ProcessOutgoingApprovalRequests(
-        AgentRunResponseUpdate update,
+    private static AgentResponseUpdate ProcessOutgoingApprovalRequests(
+        AgentResponseUpdate update,
         JsonSerializerOptions jsonSerializerOptions)
     {
         IList<AIContent>? updatedContents = null;
@@ -202,7 +207,7 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
         {
             var chatUpdate = update.AsChatResponseUpdate();
             // Yield a tool call update that represents the approval request
-            return new AgentRunResponseUpdate(new ChatResponseUpdate()
+            return new AgentResponseUpdate(new ChatResponseUpdate()
             {
                 Role = chatUpdate.Role,
                 Contents = updatedContents,
@@ -222,4 +227,3 @@ internal sealed class ServerFunctionApprovalAgent : DelegatingAIAgent
         return update;
     }
 }
-

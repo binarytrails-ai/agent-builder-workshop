@@ -24,7 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Agents\ServerFunctionApprovalAgent.cs" />
 	  <Compile Remove="Services\ChatHistoryMemoryProvider.cs" />
 	  <Compile Remove="Services\ChatHistoryMemoryProviderOptions.cs" />
 	  <Compile Remove="Services\ChatHistoryMemoryProviderScope.cs" />
