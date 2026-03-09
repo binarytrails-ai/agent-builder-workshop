@@ -61,7 +61,7 @@ Press Ctrl+C to shut down
 
 Open `TravelAssistant.http` in VS Code and click **Send Request** next to any of the pre-built requests to call the OpenAI-compatible endpoint directly.
 
-### Step 5: Stop the Service
+### Step 4: Stop the Service
 
 Press `Ctrl+C` in the terminal to shut down the web service.
 

@@ -35,9 +35,8 @@ Use this skill when the traveler:
 **User**: "Do I need a visa to visit Japan?"
 **Action**: 
 1. Ask for their nationality
-2. Use `read_skill_resource` to access visa requirements for Japan
-3. Explain visa-free entry eligibility or visa requirements
-4. Mention passport validity requirements
+2. Explain visa-free entry eligibility or visa requirements
+3. Mention passport validity requirements
 
 **User**: "I'm from Australia going to Canada for 2 weeks"
 **Action**:
