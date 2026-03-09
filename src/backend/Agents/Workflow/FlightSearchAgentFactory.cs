@@ -114,7 +114,10 @@ public class FlightSearchAgentFactory
 
     public AIAgent Create()
     {
-        var agent = _chatClient.CreateAIAgent(new ChatClientAgentOptions
+        // Get userId at creation time since agents are created per-request
+        string userId = _httpContextAccessor.HttpContext?.Items["UserId"] as string ?? "default-user";
+
+        var agent = _chatClient.AsAIAgent(new ChatClientAgentOptions
         {
             Name = "flight_search_agent",
             Description = "Searches and recommends flights for a chosen destination. Helps users compare flight options, validate travel dates.",
@@ -133,27 +136,15 @@ public class FlightSearchAgentFactory
                         #pragma warning restore MEAI001
                 ]
             },
-            AIContextProviderFactory = (ctx) =>
-            {
-                // Use ApplicationId and UserId for memory scope
-                string userId = _httpContextAccessor.HttpContext?.Items["UserId"] as string ?? "default-user";
-                var userProfileMemoryProvider = new UserProfileMemoryProvider(
-                    _chatClient,
-                    new UserProfileMemoryProviderScope
-                    {
-                        UserId = userId,
-                        ApplicationId = Constants.ApplicationId
-                    });
+            AIContextProviders = [new UserProfileMemoryProvider(
+                _chatClient,
+                new UserProfileMemoryProviderScope
+                {
+                    UserId = userId,
+                    ApplicationId = Constants.ApplicationId
+                })]
+        }, _loggerFactory);
 
-                return userProfileMemoryProvider;
-            }
-        });
-
-        agent.AsBuilder().UseOpenTelemetry(Constants.ApplicationId, options =>
-        {
-            // Enable sensitive data logging for tool calls and responses
-            options.EnableSensitiveData = true;
-        }).UseLogging(_loggerFactory).Build();
         return new ServerFunctionApprovalAgent(agent, _jsonSerializerOptions);
     }
 }

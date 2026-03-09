@@ -57,7 +57,7 @@ if (chatClient == null)
 //   2. Load - full instructions loaded on-demand via load_skill tool
 //   3. Read resources - supplementary files loaded via read_skill_resource tool
 var skillsProvider = new FileAgentSkillsProvider(
-    skillPath: Path.Combine(AppContext.BaseDirectory, "skills"));
+    skillPath: Path.Combine(Directory.GetCurrentDirectory(), "labs/00-foundations/lab07-skills/skills"));
 
 appLogger.LogInformation("FileAgentSkillsProvider created, discovering skills from ./skills directory");
 
@@ -86,22 +86,22 @@ try
 
     appLogger.LogInformation("=== Travel Assistant with File-Based Skills ===");
 
-    // Example 1: Weather inquiry (agent will load weather-info skill)
-    appLogger.LogInformation("Example 1: Checking weather for destination");
-    appLogger.LogInformation("--------------------------------------------");
-    var query1 = "I'm traveling to Tokyo in December. What's the weather like and what should I pack?";
-    appLogger.LogInformation("User: {Query}", query1);
-    var response1 = await agent.RunAsync(query1, session);
-    appLogger.LogInformation("Agent: {Response}", response1.Text);
+    // // Example 1: Weather inquiry (agent will load weather-info skill)
+    // appLogger.LogInformation("Example 1: Checking weather for destination");
+    // appLogger.LogInformation("--------------------------------------------");
+    // var query1 = "I'm traveling to Tokyo in December. What's the weather like and what should I pack?";
+    // appLogger.LogInformation("User: {Query}", query1);
+    // var response1 = await agent.RunAsync(query1, session);
+    // appLogger.LogInformation("Agent: {Response}", response1.Text);
 
-    // // Example 2: Visa requirements (agent will load visa-recommendation skill)
-    // appLogger.LogInformation("");
-    // appLogger.LogInformation("Example 2: Visa requirements");
-    // appLogger.LogInformation("----------------------------");
-    // var query2 = "I'm an Australian citizen planning to visit Japan for 2 weeks and then Canada for a week. What visas do I need?";
-    // appLogger.LogInformation("User: {Query}", query2);
-    // var response2 = await agent.RunAsync(query2, session);
-    // appLogger.LogInformation("Agent: {Response}", response2.Text);
+    // Example 2: Visa requirements (agent will load visa-recommendation skill)
+    appLogger.LogInformation("");
+    appLogger.LogInformation("Example 2: Visa requirements");
+    appLogger.LogInformation("----------------------------");
+    var query2 = "I'm an Australian citizen planning to visit Japan for 2 weeks and then Canada for a week. What visas do I need?";
+    appLogger.LogInformation("User: {Query}", query2);
+    var response2 = await agent.RunAsync(query2, session);
+    appLogger.LogInformation("Agent: {Response}", response2.Text);
 
     // // Example 3: Destination recommendation (agent will load destination-recommendation skill)
     // appLogger.LogInformation("");
@@ -143,7 +143,7 @@ static string GetWeatherForecast([Description("The city name to get weather for"
     var temp = random.Next(-5, 40);
     var condition = conditions[random.Next(conditions.Length)];
     var humidity = random.Next(30, 90);
-    
+
     return $"Weather in {city}: {condition}, {temp}C, Humidity: {humidity}%";
 }
 
