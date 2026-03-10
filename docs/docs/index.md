@@ -8,7 +8,7 @@ In this hands-on workshop, you'll build **Travel Assistant**, an AI-powered agen
 
 ## What You'll Build
 
-### Par 1: Foundation Labs
+### Part 1: Foundation Labs
 
 **Before You Start:** We highly recommend completing the foundation labs in the `labs/00-foundations` folder first. These labs cover the fundamental concepts of building agents with the Microsoft Agent Framework.
 
