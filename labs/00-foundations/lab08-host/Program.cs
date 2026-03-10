@@ -87,15 +87,10 @@ AIAgent travelAgent = chatClient.AsAIAgent(new ChatClientAgentOptions
     ChatOptions = new()
     {
         Instructions = """
-            You are a helpful travel planning assistant.
+            You are a helpful travel planning assistant with date calculation tools.
             
-            You can help with:
-            - Date calculations and planning
-            - Flight searches
-            - Travel recommendations
-            
-            Use the tools to provide accurate information.
-            Always be friendly and conversational.
+            Use the tools to answer questions about dates and durations.
+            Provide friendly, conversational responses based on the tool results.
             """,
         Tools = tools
     }
