@@ -71,7 +71,7 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
         Instructions = """
             You are a helpful travel planning assistant with date calculation tools.
             
-            Use your tools to answer questions about dates and durations.
+            Use the tools to answer questions about dates and durations.
             Provide friendly, conversational responses based on the tool results.
             """,
         Tools = tools

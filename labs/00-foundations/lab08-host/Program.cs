@@ -94,7 +94,7 @@ AIAgent travelAgent = chatClient.AsAIAgent(new ChatClientAgentOptions
             - Flight searches
             - Travel recommendations
             
-            Use your tools to provide accurate information.
+            Use the tools to provide accurate information.
             Always be friendly and conversational.
             """,
         Tools = tools

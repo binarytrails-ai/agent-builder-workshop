@@ -115,11 +115,6 @@ try
     var response1 = await agent.RunAsync(userInput1, session);
     appLogger.LogInformation("Agent: {AgentResponse}", response1.Text);
 
-    var userInput2 = "What about Canada?";
-    appLogger.LogInformation("User: {UserInput}", userInput2);
-
-    var response2 = await agent.RunAsync(userInput2, session);
-    appLogger.LogInformation("Agent: {AgentResponse}", response2.Text);
 }
 catch (Exception ex)
 {
