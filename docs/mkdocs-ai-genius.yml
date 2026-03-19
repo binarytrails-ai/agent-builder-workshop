@@ -1,10 +1,10 @@
-site_name: AI Agent Builder Workshop - DDD Melbourne
-site_description: Workshop for DDD Melbourne to learn the fundamentals of building AI Agents using Microsoft Agent Framework.
+site_name: Build Practical AI Agents - AI Genius
+site_description: Workshop for AI Genius to learn the fundamentals of building AI Agents using Microsoft Agent Framework.
 site_author: Rakesh Lakshminarayanana
 site_url: https://binarytrails-ai.github.io/agent-builder-workshop
 
 nav:
-  - Welcome: index.md
+  - Welcome: index-ai-genius.md
   - Environment Setup: 00-setup_instructions.md
   - Learning Resources: resources.md
   - Additional Resources:
