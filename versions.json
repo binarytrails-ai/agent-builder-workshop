@@ -10,5 +10,10 @@
     "version": "beginner",
     "title": "beginner",
     "aliases": []
+  },
+  {
+    "version": "advanced",
+    "title": "advanced",
+    "aliases": []
   }
 ]
