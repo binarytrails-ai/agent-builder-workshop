@@ -34,6 +34,15 @@ jobs:
       - run: pip install mkdocs-material mkdocs-glightbox mkdocs-include-markdown-plugin mike
       - name: Deploy with mike
         run: |
-          # Deploy latest version
-          mike deploy --push --update-aliases --config-file docs/mkdocs.yml latest default
-          mike set-default --push latest
+          # Deploy latest version (full workshop)
+          mike deploy --update-aliases --config-file docs/mkdocs.yml latest default
+          
+          # Deploy beginner version
+          mike deploy --config-file docs/mkdocs-beginner.yml beginner
+          
+          # Deploy advanced version
+          mike deploy --config-file docs/mkdocs-advanced.yml advanced
+          
+          # Set default and push all at once
+          mike set-default latest
+          git push
