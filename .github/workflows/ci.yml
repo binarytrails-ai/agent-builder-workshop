@@ -44,5 +44,5 @@ jobs:
           mike deploy --config-file docs/mkdocs-advanced.yml advanced
           
           # Set default and push all at once
-          mike set-default latest
+          mike set-default --config-file docs/mkdocs.yml latest
           git push
