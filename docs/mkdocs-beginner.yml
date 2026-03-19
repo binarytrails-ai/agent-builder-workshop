@@ -1,5 +1,5 @@
-site_name: AI Agent Builder Workshop
-site_description: A workshop to learn about how to build and manage AI Agents using Microsoft Agent Framework. 
+site_name: AI Agent Builder Workshop - Beginner Track
+site_description: Beginner workshop to learn the fundamentals of building AI Agents using Microsoft Agent Framework.
 site_author: Rakesh Lakshminarayanana
 site_url: https://binarytrails-ai.github.io/agent-builder-workshop
 
@@ -9,9 +9,6 @@ nav:
   - "LAB 1: Personalization": 01-lab-personalization.md
   - "LAB 2: Memory": 02-lab-memory.md
   - "LAB 3: Tools": 03-lab-tools.md
-  - "LAB 3.1: Tool Error Handling": 03.1-lab-tool-error-handling.md
-  - "LAB 4: Human Approval": 05-lab-human-approval.md
-  - "LAB 5: Multi-Agent": 06-lab-multi-agent.md
   - "Finishing Up": finishing-up.md
   - Learning Resources: resources.md
   - Additional Resources:
@@ -30,27 +27,25 @@ theme:
   features:
     - navigation.instant
     - navigation.footer
-    - navigation.tracking  # Shows progress in URL for workshop participants
-    - navigation.top  # Back to top button
+    - navigation.tracking
+    - navigation.top
     - content.code.copy
     - navigation.tabs.sticky
     - content.tabs.link
-    - search.highlight  # Highlight search terms
-    - search.suggest  # Search suggestions
+    - search.highlight
+    - search.suggest
 
-  # Change Font: https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/?h=fonts
-  # Google Fonts Supported By Default: https://fonts.google.com/
   font:
     code: Roboto Mono
     text: Roboto
   palette:
-    - scheme: default # Light Mode
+    - scheme: default
       primary: black
       accent: pink
       toggle:
         icon: material/brightness-2
         name: Switch to dark mode
-    - scheme: slate # Dark Mode
+    - scheme: slate
       primary: amber
       accent: cyan
       toggle:
@@ -70,18 +65,13 @@ markdown_extensions:
       custom_checkbox: true
   - attr_list
   - md_in_html
-  # - pymdownx.emoji:
-  # emoji_index: !!python/name:material.extensions.emoji.twemoji
-  # emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 extra_css:
   - css/custom.css
 
-# mkdocs.yml
 extra_javascript:
   - js/custom-nav.js
 
-# Version selector for mike
 extra:
   version:
     provider: mike
