@@ -35,8 +35,8 @@ jobs:
       - name: Deploy with mike
         run: |
           # Delete old versions
-          mike delete beginner --push || true
-          mike delete advanced --push || true
+          mike delete beginner --push --config-file docs/mkdocs.yml || true
+          mike delete advanced --push --config-file docs/mkdocs.yml || true
           
           # Deploy all versions with separate pushes
           mike deploy --push --update-aliases --config-file docs/mkdocs.yml latest default
