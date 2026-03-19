@@ -3,6 +3,10 @@ site_description: Workshop for AI Genius to learn the fundamentals of building A
 site_author: Rakesh Lakshminarayanana
 site_url: https://binarytrails-ai.github.io/agent-builder-workshop
 
+# Exclude the default index.md so index-ai-genius.md becomes the home page
+exclude_docs: |
+  index.md
+
 nav:
   - Welcome: index-ai-genius.md
   - Environment Setup: 00-setup_instructions.md
