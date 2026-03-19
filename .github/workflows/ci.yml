@@ -35,5 +35,5 @@ jobs:
       - name: Deploy with mike
         run: |
           # Deploy latest version
-          mike deploy --push --update-aliases latest default
+          mike deploy --push --update-aliases --config-file docs/mkdocs.yml latest default
           mike set-default --push latest
