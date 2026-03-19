@@ -34,6 +34,10 @@ jobs:
       - run: pip install mkdocs-material mkdocs-glightbox mkdocs-include-markdown-plugin mike
       - name: Deploy with mike
         run: |
+          # Delete old versions
+          mike delete beginner --push || true
+          mike delete advanced --push || true
+          
           # Deploy all versions with separate pushes
           mike deploy --push --update-aliases --config-file docs/mkdocs.yml latest default
           mike deploy --push --config-file docs/mkdocs-ai-genius.yml ai-genius
