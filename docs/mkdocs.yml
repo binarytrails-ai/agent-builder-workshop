@@ -30,9 +30,13 @@ theme:
   features:
     - navigation.instant
     - navigation.footer
+    - navigation.tracking  # Shows progress in URL for workshop participants
+    - navigation.top  # Back to top button
     - content.code.copy
     - navigation.tabs.sticky
     - content.tabs.link
+    - search.highlight  # Highlight search terms
+    - search.suggest  # Search suggestions
 
   # Change Font: https://squidfunk.github.io/mkdocs-material/setup/changing-the-fonts/?h=fonts
   # Google Fonts Supported By Default: https://fonts.google.com/

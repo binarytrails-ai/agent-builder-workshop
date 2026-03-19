@@ -452,28 +452,6 @@ Add my Croatia trip to my calendar for March 8-20
 
 ---
 
-## Lab 6: Multi-Agent Systems
-
-### Demo 6A: Complex Multi-Domain Request
-
-```
-Plan my complete Croatia trip - flights, hotels, activities, and update my calendar
-```
-
-**Expected:** Main agent delegates to Flight, Hotel, Activity, and Calendar specialists working in parallel
-
----
-
-### Demo 6B: Anniversary Surprise
-
-```
-I want to surprise my wife for our anniversary. She loves Italy. Budget is $5000, and I need this planned within an hour!
-```
-
-**Expected:** Specialists coordinate romantic trip planning with budget optimization in parallel
-
----
-
 ## Quick Test Sequence (5 minutes)
 
 Use this rapid-fire sequence to demo all Lab 1 steps quickly:

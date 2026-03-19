@@ -31,7 +31,6 @@ The workshop consists of the following labs:
 2. [Lab 2: Memory Management](./02-lab-memory.md)
 3. [Lab 3: Tool Integration](./03-lab-tools.md)
 4. [Lab 4: Human Approval](./05-lab-human-approval.md)
-5. [Lab 5: Multi-Agent Systems](./06-lab-multi-agent.md)
 
 The codebase for the workshop is organized into two main parts: the backend (.NET) and the frontend (React).
 

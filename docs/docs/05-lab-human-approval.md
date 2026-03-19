@@ -321,7 +321,3 @@ The approval workflow consists of following components that work together:
 ## Next Steps
 
 Congratulations! Your agent now requires explicit user approval for critical actions, ensuring safe and controlled automation.
-
-You can now move on to the next lab:
-
-👉 **[Lab 6: Multi-Agent Systems](06-lab-multi-agent.md)**

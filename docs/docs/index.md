@@ -36,7 +36,6 @@ This workshop consists of five progressive labs, each building on the previous o
 2. [Lab 2: Remember Everything — Memory](./02-lab-memory.md)
 3. [Lab 3: Give It Superpowers — Tools](./03-lab-tools.md)
 4. [Lab 4: Human-in-the-Loop — Approval workflows](./05-lab-human-approval.md)
-5. [Lab 5: Specialist Team — Multi-agent collaboration](./06-lab-multi-agent.md)
 
 ## Technologies You'll Use
 
