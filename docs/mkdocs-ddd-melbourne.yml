@@ -1,15 +1,11 @@
-site_name: AI Agent Builder Workshop - Advanced Track
-site_description: Advanced workshop covering error handling, human approval, and multi-agent systems using Microsoft Agent Framework.
+site_name: AI Agent Builder Workshop - DDD Melbourne
+site_description: Workshop for DDD Melbourne to learn the fundamentals of building AI Agents using Microsoft Agent Framework.
 site_author: Rakesh Lakshminarayanana
 site_url: https://binarytrails-ai.github.io/agent-builder-workshop
 
 nav:
   - Welcome: index.md
   - Environment Setup: 00-setup_instructions.md
-  - "LAB 3: Tools": 03-lab-tools.md
-  - "LAB 3.1: Tool Error Handling": 03.1-lab-tool-error-handling.md
-  - "LAB 4: Human Approval": 05-lab-human-approval.md
-  - "Finishing Up": finishing-up.md
   - Learning Resources: resources.md
   - Additional Resources:
     - Azure Resource Deployment: Resources/azure-resource-setup.md

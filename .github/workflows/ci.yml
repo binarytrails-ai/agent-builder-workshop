@@ -36,7 +36,7 @@ jobs:
         run: |
           # Deploy all versions with separate pushes
           mike deploy --push --update-aliases --config-file docs/mkdocs.yml latest default
-          mike deploy --push --config-file docs/mkdocs-beginner.yml beginner
+          mike deploy --push --config-file docs/mkdocs-ddd-melbourne.yml ddd-melbourne
           mike deploy --push --config-file docs/mkdocs-advanced.yml advanced
           
           # Set default
