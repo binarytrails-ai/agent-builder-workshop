@@ -1,10 +1,6 @@
 # Setting Up Azure Azure Resources for the Workshop
 
-In this guide, you will set up the necessary Azure resources required to complete the labs in this workshop. 
-
-The labs utilize models and services from Azure AI Foundry.
-
-Azure AI Foundry is a managed service that simplifies the development and deployment of AI applications by providing tools for model management, evaluation, and monitoring.
+In this guide, you will set up the necessary Azure resources required to complete the labs in this workshop. The labs utilize models and services from Azure AI Foundry.
 
 ---
 
@@ -53,7 +49,7 @@ azd up
 
 This command will:
 
-- Provision Azure AI Foundry resources (AI Hub, AI Project)
+- Provision all the necessary resources in Azure.
 - Deploy AI models.
 - Configure authentication and permissions
 
@@ -62,11 +58,6 @@ This command will:
 
 ## Verify Deployment ✅
 
-1. Navigate to the [Azure Portal](https://portal.azure.com)
-2. Look for a resource group named `rg-aiagent-ws-dev` (or similar, based on your environment name)
-3. Verify the following resources are created:
-    - Azure AI Hub
-    - Azure AI Project
-    - AI models (e.g., GPT-4)
+1. Navigate to the [Azure Portal](https://portal.azure.com) and verify the resources under the resource group `rg-aiagent-ws-dev`.
 
 ---

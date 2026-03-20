@@ -333,11 +333,3 @@ Now update the `CreateAsync` method to integrate the conversation history memory
     *Expected Response:* Agent recalls the recommended destinations and provides details.
 
 ---
-
-## Next Steps
-
-Congratulations! Your agent can now recall details from past conversations using vector search.
-
-You can now move on to the next lab:
-
-👉 **[Lab 3: Give It Superpowers - Tools Integration](03-lab-tools.md)**

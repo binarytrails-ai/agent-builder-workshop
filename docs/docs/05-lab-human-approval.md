@@ -317,7 +317,3 @@ The approval workflow consists of following components that work together:
     *Expected: Agent calls `SearchFlights()` successfully, presents flight options*
 
 ---
-
-## Next Steps
-
-Congratulations! Your agent now requires explicit user approval for critical actions, ensuring safe and controlled automation.

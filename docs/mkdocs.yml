@@ -9,7 +9,6 @@ nav:
   - "Finishing Up": finishing-up.md
   - Learning Resources: resources.md
   - Additional Resources:
-    - Azure Resource Deployment: Resources/azure-resource-setup.md
     - Aspire Dashboard Setup: Resources/aspire-dashboard-setup.md
   - Feedback: feedback.md
 
