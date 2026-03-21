@@ -2,10 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace ContosoTravelAgent.Host.Models;
 
-/// <summary>
-/// Represents an approval request for a function call.
-/// </summary>
-#pragma warning disable CS1591 // Missing XML comment
 // Define approval models
 public sealed class ApprovalRequest
 {
@@ -31,13 +27,9 @@ public sealed class ApprovalResponse
     public required bool Approved { get; init; }
 }
 
-/// <summary>
-/// JSON serialization context for approval models.
-/// </summary>
 [JsonSerializable(typeof(ApprovalRequest))]
 [JsonSerializable(typeof(ApprovalResponse))]
 [JsonSerializable(typeof(Dictionary<string, object?>))]
-internal partial class ApprovalJsonContext : JsonSerializerContext
-{
-}
+public sealed partial class ApprovalJsonContext : JsonSerializerContext;
+
 #pragma warning restore CS1591
