@@ -2,70 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/00-setup_instructions/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/01-lab-personalization/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/02-lab-memory/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/03-lab-tools/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/03.1-lab-tool-error-handling/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/04-lab-observability/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/05-lab-human-approval/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/feedback/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/finishing-up/</loc>
-         <lastmod>2026-03-19</lastmod>
-    </url>
-    <url>
-         <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/index-ai-genius/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/prompts/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/resources/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/summary/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/Resources/aspire-dashboard-setup/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/Resources/azure-ai-foundry-setup/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/Resources/azure-resource-setup/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
     </url>
     <url>
          <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/Resources/github-models-setup/</loc>
-         <lastmod>2026-03-19</lastmod>
+         <lastmod>2026-03-21</lastmod>
+    </url>
+    <url>
+         <loc>https://binarytrails-ai.github.io/agent-builder-workshop/ai-genius/events/index-ai-genius/</loc>
+         <lastmod>2026-03-21</lastmod>
     </url>
 </urlset>
