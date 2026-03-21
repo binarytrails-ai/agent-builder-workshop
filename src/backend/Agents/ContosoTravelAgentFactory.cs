@@ -1,9 +1,9 @@
-﻿using ContosoTravelAgent.Host.Tools;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Azure.Cosmos;
 using OpenAI.Embeddings;
 using System.Text.Json;
+using ModelContextProtocol.Client;
 
 namespace ContosoTravelAgent.Host.Agents;
 
@@ -15,15 +15,24 @@ public class ContosoTravelAgentFactory
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly Database? _cosmosDatabase;
     private readonly ILoggerFactory _loggerFactory;
-    private readonly FlightFinderTools _flightFinderTools;
+    private readonly McpClient _mcpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the ContosoTravelAgentFactory class.
+    /// </summary>
+    /// <param name="chatClient">Chat client for LLM interactions.</param>
+    /// <param name="embeddingClient">Embedding client for vector operations.</param>
+    /// <param name="httpContextAccessor">HTTP context accessor.</param>
+    /// <param name="jsonSerializerOptions">JSON serialization options.</param>
+    /// <param name="loggerFactory">Logger factory.</param>
+    /// <param name="cosmosDatabase">Cosmos DB database instance (optional).</param>
     public ContosoTravelAgentFactory(
         IChatClient chatClient,
         EmbeddingClient embeddingClient,
         IHttpContextAccessor httpContextAccessor,
         JsonSerializerOptions jsonSerializerOptions,
         ILoggerFactory loggerFactory,
-        FlightFinderTools flightFinderTools,
+       IServiceProvider sp,
         Database? cosmosDatabase = null)
     {
         _chatClient = chatClient;
@@ -32,7 +41,7 @@ public class ContosoTravelAgentFactory
         _jsonSerializerOptions = jsonSerializerOptions;
         _cosmosDatabase = cosmosDatabase;
         _loggerFactory = loggerFactory;
-        _flightFinderTools = flightFinderTools;
+        _mcpClient = sp.GetRequiredKeyedService<McpClient>("mcp-contoso-travel");
     }
 
     private const string AgentInstructions = """
@@ -102,6 +111,9 @@ public class ContosoTravelAgentFactory
 
     public async Task<AIAgent> CreateAsync()
     {
+        // Get MCP tools from the flight search server
+        var mcpTools = await _mcpClient.ListToolsAsync();
+
         AIAgent agent = _chatClient.AsAIAgent(new ChatClientAgentOptions
         {
             Name = Constants.AgentName,
@@ -109,7 +121,7 @@ public class ContosoTravelAgentFactory
             {
                 ResponseFormat = ChatResponseFormat.Text,
                 Instructions = AgentInstructions,
-                Tools = []
+                Tools = [.. mcpTools]
             },
         });
 

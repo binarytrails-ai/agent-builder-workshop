@@ -2,6 +2,20 @@
 
 name: agent-builder-workshop
 services:
+  backend:
+    language: dotnet
+    project: ./src/backend
+    host: containerapp
+    docker:
+      path: Dockerfile
+      context: .
+  frontend:
+    language: js
+    project: ./src/frontend
+    host: containerapp
+    docker:
+      path: Dockerfile
+      context: .
 hooks:
   preup:
     posix:

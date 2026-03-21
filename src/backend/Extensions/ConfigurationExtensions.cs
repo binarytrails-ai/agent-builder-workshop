@@ -1,4 +1,4 @@
-using DotNetEnv;
+using ContosoTravel.ServiceDefaults;
 using ContosoTravelAgent.Host.Models;
 using Microsoft.Extensions.Options;
 
@@ -8,97 +8,46 @@ public static class ConfigurationExtensions
 {
     public static ContosoTravelAppConfig LoadContosoTravelConfig(this IServiceCollection services, IConfiguration configuration)
     {
-        LoadEnvironmentVariables();
+        EnvironmentVariableHelper.LoadEnvironmentVariables();
 
-        var useGitHubModels = bool.Parse(Env.GetString("USE_GITHUB_MODELS")
-                                         ?? configuration["USE_GITHUB_MODELS"]
-                                         ?? "false");
+        var useGitHubModels = EnvironmentVariableHelper.GetBoolConfigValue("USE_GITHUB_MODELS", configuration);
 
         // GitHub Models configuration
-        var githubToken = Env.GetString("GITHUB_TOKEN")
-                          ?? configuration["GITHUB_TOKEN"];
-        var githubModelsBaseUrl = Env.GetString("GITHUB_MODELS_BASE_URL")
-                                  ?? configuration["GITHUB_MODELS_BASE_URL"]
-                                  ?? "https://models.inference.ai.azure.com";
-        var githubTextModelId = Env.GetString("GITHUB_TEXT_MODEL_ID")
-                                ?? configuration["GITHUB_TEXT_MODEL_ID"]
-                                ?? "gpt-4o";
-        var githubEmbeddingModelId = Env.GetString("GITHUB_EMBEDDING_MODEL_ID")
-                                     ?? configuration["GITHUB_EMBEDDING_MODEL_ID"]
-                                     ?? "openai/text-embedding-ada-002";
+        var githubToken = EnvironmentVariableHelper.GetConfigValue("GITHUB_TOKEN", configuration);
+        var githubModelsBaseUrl = EnvironmentVariableHelper.GetConfigValue("GITHUB_MODELS_BASE_URL", configuration, "https://models.inference.ai.azure.com");
+        var githubTextModelId = EnvironmentVariableHelper.GetConfigValue("GITHUB_TEXT_MODEL_ID", configuration, "gpt-4o");
+        var githubEmbeddingModelId = EnvironmentVariableHelper.GetConfigValue("GITHUB_EMBEDDING_MODEL_ID", configuration, "openai/text-embedding-ada-002");
 
         // Azure AI configuration
-        var azureProjectEndpoint = Env.GetString("AZURE_AI_PROJECT_ENDPOINT")
-                                   ?? configuration["AZURE_AI_PROJECT_ENDPOINT"];
-
-        var azureAiFoundryServiceEndpoint = Env.GetString("AZURE_AI_FOUNDRY_SERVICE_ENDPOINT")
-                                           ?? configuration["AZURE_AI_FOUNDRY_SERVICE_ENDPOINT"];
-
-        var azureAiServicesEndpoint = Env.GetString("AZURE_AI_SERVICES_ENDPOINT")
-                                     ?? configuration["AZURE_AI_SERVICES_ENDPOINT"];
-
-        var azureAiServicesKey = Env.GetString("AZURE_AI_SERVICES_KEY")
-                                ?? configuration["AZURE_AI_SERVICES_KEY"];
-
-        var azureProjectName = Env.GetString("AZURE_AI_PROJECT_NAME")
-                               ?? configuration["AZURE_AI_PROJECT_NAME"];
-
-        var azureLocation = Env.GetString("AZURE_LOCATION")
-                            ?? configuration["AZURE_LOCATION"];
-
-        var azureSubscriptionId = Env.GetString("AZURE_SUBSCRIPTION_ID")
-                                  ?? configuration["AZURE_SUBSCRIPTION_ID"];
-
-        var azureTenantId = Env.GetString("AZURE_TENANT_ID")
-                            ?? configuration["AZURE_TENANT_ID"];
-
-        var textModelName = Env.GetString("AZURE_AZURE_TEXT_MODEL_NAME")
-                            ?? configuration["AZURE_AZURE_TEXT_MODEL_NAME"]
-                            ?? "gpt-4o";
-
-        var embeddingModelName = Env.GetString("AZURE_EMBEDDING_MODEL_NAME")
-                                   ?? configuration["AZURE_EMBEDDING_MODEL_NAME"]
-                                   ?? "text-embedding-ada-002";
-
-        var azureSearchEndpoint = Env.GetString("AZURE_SEARCH_SERVICE_ENDPOINT")
-                                  ?? configuration["AZURE_SEARCH_SERVICE_ENDPOINT"];
-
-        var azureSearchAdminKey = Env.GetString("AZURE_AI_SEARCH_ADMIN_KEY")
-                                  ?? configuration["AZURE_AI_SEARCH_ADMIN_KEY"];
-
-        var otlpEndpoint = Env.GetString("OTEL_EXPORTER_OTLP_ENDPOINT")
-                           ?? configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-
-        var applicationInsightsConnectionString = Env.GetString("APPLICATIONINSIGHTS_CONNECTION_STRING")
-                                                 ?? configuration["ApplicationInsights:ConnectionString"];
+        var azureProjectEndpoint = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_PROJECT_ENDPOINT", configuration);
+        var azureAiFoundryServiceEndpoint = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_FOUNDRY_SERVICE_ENDPOINT", configuration);
+        var azureAiServicesEndpoint = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_SERVICES_ENDPOINT", configuration);
+        var azureAiServicesKey = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_SERVICES_KEY", configuration);
+        var azureProjectName = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_PROJECT_NAME", configuration);
+        var azureLocation = EnvironmentVariableHelper.GetConfigValue("AZURE_LOCATION", configuration);
+        var azureSubscriptionId = EnvironmentVariableHelper.GetConfigValue("AZURE_SUBSCRIPTION_ID", configuration);
+        var azureTenantId = EnvironmentVariableHelper.GetConfigValue("AZURE_TENANT_ID", configuration);
+        var textModelName = EnvironmentVariableHelper.GetConfigValue("AZURE_TEXT_MODEL_NAME", configuration, "gpt-4o");
+        var embeddingModelName = EnvironmentVariableHelper.GetConfigValue("AZURE_EMBEDDING_MODEL_NAME", configuration, "text-embedding-ada-002");
+        var azureSearchEndpoint = EnvironmentVariableHelper.GetConfigValue("AZURE_SEARCH_SERVICE_ENDPOINT", configuration);
+        var azureSearchAdminKey = EnvironmentVariableHelper.GetConfigValue("AZURE_AI_SEARCH_ADMIN_KEY", configuration);
+        var otlpEndpoint = EnvironmentVariableHelper.GetConfigValue("OTEL_EXPORTER_OTLP_ENDPOINT", configuration);
+        
+        // Application Insights - check both keys
+        var applicationInsightsConnectionString = EnvironmentVariableHelper.GetConfigValue("APPLICATIONINSIGHTS_CONNECTION_STRING", configuration)
+                                                  ?? configuration["ApplicationInsights:ConnectionString"];
 
         // Mem0 configuration
-        var mem0Endpoint = Env.GetString("MEM0_ENDPOINT")
-                          ?? configuration["MEM0_ENDPOINT"]
-                          ?? "https://api.mem0.ai";
-
-        var mem0ApiKey = Env.GetString("MEM0_APIKEY")
-                        ?? configuration["MEM0_APIKEY"];
+        var mem0Endpoint = EnvironmentVariableHelper.GetConfigValue("MEM0_ENDPOINT", configuration, "https://api.mem0.ai");
+        var mem0ApiKey = EnvironmentVariableHelper.GetConfigValue("MEM0_APIKEY", configuration);
 
         // Cosmos DB configuration
-        var cosmosDbEndpoint = Env.GetString("COSMOS_DB_ENDPOINT")
-                              ?? configuration["COSMOS_DB_ENDPOINT"];
-
-        var cosmosDbConnectionString = Env.GetString("COSMOS_DB_CONNECTION_STRING")
-                                      ?? configuration["COSMOS_DB_CONNECTION_STRING"];
-
-        var cosmosDbDatabaseName = Env.GetString("COSMOS_DB_DATABASE_NAME")
-                                  ?? configuration["COSMOS_DB_DATABASE_NAME"];
-
-        var cosmosDbChatHistoryContainer = Env.GetString("COSMOS_DB_CHAT_HISTORY_CONTAINER")
-                                          ?? configuration["COSMOS_DB_CHAT_HISTORY_CONTAINER"];
-
-        var cosmosDbUserProfileContainer = Env.GetString("COSMOS_DB_USER_PROFILE_CONTAINER")
-                                          ?? configuration["COSMOS_DB_USER_PROFILE_CONTAINER"];
-
-        var cosmosDbFlightsContainer = Env.GetString("COSMOS_DB_FLIGHTS_CONTAINER")
-                                      ?? configuration["COSMOS_DB_FLIGHTS_CONTAINER"]
-                                      ?? "Flights";
+        var cosmosDbEndpoint = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_ENDPOINT", configuration);
+        var cosmosDbConnectionString = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_CONNECTION_STRING", configuration);
+        var cosmosDbDatabaseName = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_DATABASE_NAME", configuration);
+        var cosmosDbChatHistoryContainer = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_CHAT_HISTORY_CONTAINER", configuration);
+        var cosmosDbUserProfileContainer = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_USER_PROFILE_CONTAINER", configuration);
+        var cosmosDbFlightsContainer = EnvironmentVariableHelper.GetConfigValue("COSMOS_DB_FLIGHTS_CONTAINER", configuration, "Flights");
 
         // Validate configuration based on mode
         if (useGitHubModels && string.IsNullOrWhiteSpace(githubToken))
@@ -148,27 +97,5 @@ public static class ConfigurationExtensions
         services.AddSingleton(config);
 
         return config;
-    }
-
-    /// <summary>
-    /// Loads .env file from workspace root by searching up the directory tree.
-    /// </summary>
-    private static void LoadEnvironmentVariables()
-    {
-        var fileName = ".env";
-        var currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
-        while (currentDir != null)
-        {
-            var envFile = Path.Combine(currentDir.FullName, fileName);
-            if (File.Exists(envFile))
-            {
-                Env.Load(envFile);
-                Console.WriteLine($"Loaded .env from: {envFile}");
-                return;
-            }
-            currentDir = currentDir.Parent;
-        }
-
-        Console.WriteLine("No .env file found");
     }
 }

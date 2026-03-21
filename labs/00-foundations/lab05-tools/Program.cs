@@ -57,7 +57,7 @@ var tools = new List<AITool>
     AIFunctionFactory.Create(GetCurrentDate),
     AIFunctionFactory.Create(CalculateDateDifference),
     AIFunctionFactory.Create(CalculateDaysUntil),
-    AIFunctionFactory.Create(SearchFlights)
+    AIFunctionFactory.Create(CalculateTimeZone)
 };
 
 appLogger.LogInformation("Created {ToolCount} tools for the agent", tools.Count);
@@ -69,9 +69,9 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
     ChatOptions = new()
     {
         Instructions = """
-            You are a helpful travel planning assistant with date calculation tools.
+            You are a helpful travel planning assistant with tools for dates and Australian time zones.
             
-            Use the tools to answer questions about dates and durations.
+            Use the tools to answer questions.
             Provide friendly, conversational responses based on the tool results.
             """,
         Tools = tools
@@ -88,13 +88,20 @@ appLogger.LogInformation("Agent created with tools successfully");
 // Step 6: Run conversation with tool usage
 try
 {
-    AgentSession session = await agent.CreateSessionAsync();
+    // Example 1: Simple time zone difference
+    var userInput2 = "What's the time difference between Melbourne and Brisbane?";
+    appLogger.LogInformation("User: {UserInput}", userInput2);
+    var response2 = await agent.RunAsync(userInput2);
+    appLogger.LogInformation("Agent: {AgentResponse}", response2.Text);
+    Console.WriteLine();
 
-    var userInput1 = "Find me flights from Melbourne to Tokyo";
+    // Example 2: Time zone calculation between Australian cities
+    var userInput1 = "What time is it in Perth when it's 3:00 PM in Sydney?";
     appLogger.LogInformation("User: {UserInput}", userInput1);
-
-    var response1 = await agent.RunAsync(userInput1, session);
+    var response1 = await agent.RunAsync(userInput1);
     appLogger.LogInformation("Agent: {AgentResponse}", response1.Text);
+    Console.WriteLine();
+
 }
 catch (Exception ex)
 {
@@ -168,77 +175,100 @@ static string CalculateDaysUntil(
 }
 
 /// <summary>
-/// Searches for available flights between cities.
+/// Calculates time zone differences between Australian cities.
 /// </summary>
-[Description("Search for available flights between two cities. Returns flight options with prices and times.")]
-static string SearchFlights(
-    [Description("Origin city (e.g., 'Melbourne', 'Sydney')")] string origin,
-    [Description("Destination city (e.g., 'Tokyo', 'Paris', 'Singapore')")] string destination)
+[Description("Calculate the time difference between two Australian cities and optionally convert a specific time. Returns time zone offset and converted time if provided.")]
+static string CalculateTimeZone(
+    [Description("Origin Australian city (e.g., 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Hobart', 'Darwin', 'Canberra')")] string fromCity,
+    [Description("Destination Australian city (e.g., 'Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Hobart', 'Darwin', 'Canberra')")] string toCity,
+    [Description("Optional: time in origin city in 24-hour format HH:mm (e.g., '14:30')")] string? localTime = null)
 {
-    // Find the workspace root by looking for azure.yaml
-    var currentDir = Directory.GetCurrentDirectory();
-    string? workspaceRoot = null;
-    while (currentDir != null)
+    try
     {
-        var azureYaml = Path.Combine(currentDir, "azure.yaml");
-        if (File.Exists(azureYaml))
+        var fromTz = GetTimeZone(fromCity);
+        var toTz = GetTimeZone(toCity);
+
+        var nowUtc = DateTime.UtcNow;
+        var fromOffset = fromTz.GetUtcOffset(nowUtc);
+        var toOffset = toTz.GetUtcOffset(nowUtc);
+        var diffHours = (toOffset - fromOffset).TotalHours;
+
+        if (string.IsNullOrWhiteSpace(localTime))
         {
-            workspaceRoot = currentDir;
-            break;
-        }
-        currentDir = Directory.GetParent(currentDir)?.FullName;
-    }
-
-    if (workspaceRoot == null)
-    {
-        return JsonSerializer.Serialize(new { error = "Could not find workspace root" });
-    }
-
-    // Read flights data from JSON file
-    var flightsFile = Path.Combine(workspaceRoot, "data", "flights_data.json");
-    if (!File.Exists(flightsFile))
-    {
-        return JsonSerializer.Serialize(new { error = "Flights data file not found" });
-    }
-
-    var jsonContent = File.ReadAllText(flightsFile);
-    var allFlights = JsonSerializer.Deserialize<JsonElement>(jsonContent);
-
-    // Filter flights by origin and destination
-    var matchingFlights = new List<object>();
-
-    foreach (var flight in allFlights.EnumerateArray())
-    {
-        var routeOriginCity = flight.GetProperty("route").GetProperty("origin").GetProperty("city").GetString();
-        var routeDestCity = flight.GetProperty("route").GetProperty("destination").GetProperty("city").GetString();
-
-        if (routeOriginCity?.Equals(origin, StringComparison.OrdinalIgnoreCase) == true &&
-            routeDestCity?.Equals(destination, StringComparison.OrdinalIgnoreCase) == true)
-        {
-            matchingFlights.Add(new
+            return JsonSerializer.Serialize(new
             {
-                flightNumber = flight.GetProperty("flightNumber").GetString(),
-                airline = flight.GetProperty("airline").GetProperty("name").GetString(),
-                origin = routeOriginCity,
-                destination = routeDestCity,
-                departureTime = flight.GetProperty("schedule").GetProperty("departure").GetString(),
-                arrivalTime = flight.GetProperty("schedule").GetProperty("arrival").GetString(),
-                duration = flight.GetProperty("schedule").GetProperty("duration").GetString(),
-                price = flight.GetProperty("pricing").GetProperty("amount").GetDecimal(),
-                currency = flight.GetProperty("pricing").GetProperty("currency").GetString()
+                fromCity,
+                toCity,
+                timeDifferenceHours = diffHours,
+                description = diffHours switch
+                {
+                    > 0 => $"{toCity} is {diffHours} hours ahead of {fromCity}",
+                    < 0 => $"{toCity} is {Math.Abs(diffHours)} hours behind {fromCity}",
+                    _ => "Same time zone"
+                }
             });
         }
-    }
 
-    var result = new
+        if (!TimeOnly.TryParse(localTime, out var time))
+        {
+            return JsonSerializer.Serialize(new { error = "Invalid time format (HH:mm)" });
+        }
+
+        var today = DateTime.Today;
+        var fromLocal = new DateTime(
+            today.Year, today.Month, today.Day,
+            time.Hour, time.Minute, 0,
+            DateTimeKind.Unspecified);
+
+        var utc = TimeZoneInfo.ConvertTimeToUtc(fromLocal, fromTz);
+        var toLocal = TimeZoneInfo.ConvertTimeFromUtc(utc, toTz);
+
+        return JsonSerializer.Serialize(new
+        {
+            fromCity,
+            toCity,
+            fromTime = localTime,
+            toTime = toLocal.ToString("HH:mm"),
+            dayAdjustment = toLocal.Date.CompareTo(fromLocal.Date) switch
+            {
+                0 => "same day",
+                > 0 => "next day",
+                _ => "previous day"
+            }
+        });
+    }
+    catch (Exception ex)
     {
-        origin,
-        destination,
-        totalFlights = matchingFlights.Count,
-        flights = matchingFlights.Take(5).ToList() // Limit to 5 results
+        return JsonSerializer.Serialize(new { error = ex.Message });
+    }
+}
+
+/// <summary>
+/// Helper method to get TimeZoneInfo for Australian cities.
+/// </summary>
+static TimeZoneInfo GetTimeZone(string city)
+{
+    var cityTimeZones = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Sydney", "Australia/Sydney" },
+        { "Melbourne", "Australia/Melbourne" },
+        { "Brisbane", "Australia/Brisbane" },
+        { "Perth", "Australia/Perth" },
+        { "Adelaide", "Australia/Adelaide" },
+        { "Hobart", "Australia/Hobart" },
+        { "Darwin", "Australia/Darwin" },
+        { "Canberra", "Australia/Sydney" },      // Canberra uses Sydney timezone
+        { "Gold Coast", "Australia/Brisbane" },  // Gold Coast uses Brisbane timezone
+        { "Newcastle", "Australia/Sydney" },     // Newcastle uses Sydney timezone
+        { "Cairns", "Australia/Brisbane" }       // Cairns uses Brisbane timezone
     };
 
-    return JsonSerializer.Serialize(result);
+    if (!cityTimeZones.TryGetValue(city, out var tzId))
+    {
+        throw new ArgumentException($"Unknown city: {city}");
+    }
+
+    return TimeZoneInfo.FindSystemTimeZoneById(tzId);
 }
 
 

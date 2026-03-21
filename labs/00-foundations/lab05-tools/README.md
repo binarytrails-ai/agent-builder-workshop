@@ -2,14 +2,13 @@
 
 In this lab, you will create an AI-powered travel assistant that can use tools to perform actions.
 
-You will implement an agent with tools: date calculations and flight search. The agent will automatically decide which tool to use based on the user's question.
+You will implement an agent with tools: date calculations and time zone calculations for Australian cities. The agent will automatically decide which tool to use based on the user's question.
 
 By the end of this lab, you will:
 
 - ✅ Create tools (functions) that agents can call automatically
 - ✅ Understand how agents decide when and which tools to use
 - ✅ See parameter extraction from natural language in action
-- ✅ Learn how tools can read from external data sources
 
 ## Key Implementation Details
 
@@ -33,7 +32,7 @@ The agent handles steps 4-6 automatically — you only define the functions.
 Any static or instance method can be turned into an agent tool with a single line:
 
 ```csharp
-AIFunctionFactory.Create(SearchFlights)
+AIFunctionFactory.Create(CalculateTimeZone)
 ```
 
 The framework uses reflection to read the method signature and builds a tool description automatically. To make the tool's purpose clear to the model, use:
@@ -42,13 +41,11 @@ The framework uses reflection to read the method signature and builds a tool des
 - **`[Description(...)]` on each parameter** — tells the model what to pass in
 
 ```csharp
-[Description("Search for available flights between two cities. Returns flight options with prices and times.")]
-static string SearchFlights(
-    [Description("Origin city (e.g., 'Melbourne', 'Sydney')")] string origin,
-    [Description("Destination city (e.g., 'Tokyo', 'Paris', 'Singapore')")] string destination)
-```
-
-Good descriptions are critical — they are the only thing guiding the model's decision about when and how to call the tool.
+[Description("Calculate the time difference between two Australian cities and optionally convert a specific time.")]
+static string CalculateTimeZone(
+    [Description("Origin Australian city (e.g., 'Sydney', 'Melbourne', 'Brisbane')")] string fromCity,
+    [Description("Destination Australian city (e.g., 'Perth', 'Adelaide', 'Darwin')")] string toCity,
+    [Description("Optional: time in origin city in 24-hour format HH:mm")] string? localTime = null)
 
 ### Registering Tools on the Agent
 
@@ -60,7 +57,7 @@ var tools = new List<AITool>
     AIFunctionFactory.Create(GetCurrentDate),
     AIFunctionFactory.Create(CalculateDateDifference),
     AIFunctionFactory.Create(CalculateDaysUntil),
-    AIFunctionFactory.Create(SearchFlights)
+    AIFunctionFactory.Create(CalculateTimeZone)
 };
 
 var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
@@ -69,11 +66,9 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 });
 ```
 
-The model can call multiple tools in a single turn if needed. For example, `"How many days until my Tokyo flight?"` might trigger `SearchFlights` and `CalculateDaysUntil` in sequence.
+The model can call multiple tools in a single turn if needed. For example, `"How many days until March 30th, and what time will it be in Perth when it's 2 PM in Sydney on that day?"` might trigger `CalculateDaysUntil` and `CalculateTimeZone` together.
 
-### The `SearchFlights` Tool and the Data File
-
-Rather than calling a real airline API, `SearchFlights` reads from `data/flights_data.json` in the workspace. 
+### Tool Return Values and JSON
 
 All four tools return a **JSON string**. This is the recommended approach because:
 
@@ -88,7 +83,7 @@ All four tools return a **JSON string**. This is the recommended approach becaus
 ### Step 1: Navigate to the Lab Folder
 
 ```bash
-cd labs/00-foundations/lab03-tools
+cd labs/00-foundations/lab05-tools
 ```
 
 ### Step 2: Run the Program
@@ -106,21 +101,43 @@ Or in Visual Studio Code, open Program.cs and click the **"Run"** button that ap
 You should see the agent automatically call tools to answer the questions. Notice how:
 
 - The agent decides which tool(s) to call — you never tell it explicitly
-- Parameters like city names are extracted directly from natural language
+- Parameters like city names and times are extracted directly from natural language
 - The agent weaves the tool results into a natural conversational response
+- The agent can chain multiple tools in a single turn when needed
+- Optional parameters (like `localTime`) are handled automatically
+
+## Sample Prompts to Try
+
+After running the program, try these prompts to explore the tool capabilities:
+
+**Time Zone Calculations:**
+
+- "What's the time difference between Sydney and Perth?"
+- "If it's 10:00 AM in Brisbane, what time is it in Adelaide?"
+- "When it's 5:30 PM in Melbourne, what time is it in Darwin?"
+- "I need to call someone in Hobart at 2:00 PM their time. What time is that in Perth?"
+
+**Date Calculations:**
+
+- "How many days until April 15th?"
+- "Calculate the days between March 25th and May 10th"
+- "What day of the week is today?"
+
+**Multiple Tools:**
+
+- "How many days until April 1st, and what time will it be in Perth when it's 9:00 AM in Sydney on that day?"
 
 ---
 
 ## Challenges and Next Steps
 
-**Ask questions that need multiple tools**
-- Try: `"Find me flights from Sydney to Paris and tell me how many days until the departure date"`.
-- Watch the logs to see the agent chain two tool calls together in one turn.
 
 **Add a new tool**
-- Write a `ConvertCurrency` function that takes an amount, a source currency, and a target currency, and returns a converted value using a hardcoded exchange rate.
-- Register it with `AIFunctionFactory.Create(ConvertCurrency)` and ask: `"How much is a $800 AUD flight in USD?"`.
 
-**Test tool failure handling**
-- Ask for flights from a city that does not exist in the data file (e.g. `"Find me flights from Springfield to Tokyo"`).
-- The tool returns `totalFlights: 0`. Does the agent handle this gracefully or does it hallucinate results?
+- Write a `CheckVisaRequirements` function that reads the visa policy markdown files in the `data/` folder.
+- Use `AIFunctionFactory.Create(CheckVisaRequirements)` and ask: `"Do I need a visa to travel from USA to Japan?"`.
+
+**Test with unknown cities**
+
+- Ask: `"What's the time difference between Sydney and Auckland?"` (Auckland is in New Zealand, not Australia).
+- Does the agent gracefully handle cities not in the time zone dictionary?

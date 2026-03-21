@@ -34,7 +34,10 @@ public record ContosoTravelAppConfig
     public string? CosmosDbUserProfileContainer { get; init; }
     public string? CosmosDbFlightsContainer { get; init; }
 
-    // Mem0 configuration
+    // MCP tool configuration for flight search
+
+    public string McpFlightSearchToolBaseUrl { get; init; } = "http://localhost:5002";
+
     public string Mem0Endpoint { get; init; } = "https://api.mem0.ai";
     public string? Mem0ApiKey { get; init; }
 }

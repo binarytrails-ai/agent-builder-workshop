@@ -2,11 +2,12 @@ using ContosoTravelAgent.Host;
 using ContosoTravelAgent.Host.Agents;
 using ContosoTravelAgent.Host.Extensions;
 using Microsoft.Agents.AI;
-using Microsoft.Agents.AI.DevUI;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 using Microsoft.Extensions.AI;
 using OpenAI;
 using System.ClientModel;
+using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Services.LoadContosoTravelConfig(builder.Configuration);
@@ -73,8 +74,36 @@ builder.Services.AddSingleton(sp =>
     return cosmosClient.GetDatabase(config.CosmosDbDatabaseName);
 });
 
-// Register tools
-builder.Services.AddSingleton<ContosoTravelAgent.Host.Tools.FlightFinderTools>();
+// Register MCP client for flight search (HTTP transport)
+builder.Services.AddHttpClient("mcp-contoso-travel", client =>
+{
+    client.BaseAddress = new Uri(config.McpFlightSearchToolBaseUrl);
+});
+
+builder.Services.AddKeyedSingleton<McpClient>("mcp-contoso-travel", (sp, obj) =>
+{
+    var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+    var httpClient = sp.GetRequiredService<IHttpClientFactory>()
+                       .CreateClient("mcp-contoso-travel");
+
+    var clientTransportOptions = new HttpClientTransportOptions()
+    {
+        Endpoint = new Uri($"{config.McpFlightSearchToolBaseUrl}/mcp")
+    };
+
+    var clientTransport = new HttpClientTransport(clientTransportOptions, httpClient, loggerFactory);
+    var clientOptions = new McpClientOptions()
+    {
+        ClientInfo = new Implementation()
+        {
+            Name = "Contoso Travel MCP Client",
+            Version = "1.0.0",
+        }
+    };
+
+    var mcpClient = McpClient.CreateAsync(clientTransport, clientOptions, loggerFactory).GetAwaiter().GetResult();
+    return mcpClient;
+});
 
 // Register agent factories
 builder.Services.AddSingleton<ContosoTravelAgentFactory>();
