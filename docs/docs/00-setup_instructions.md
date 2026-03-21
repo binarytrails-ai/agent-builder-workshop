@@ -14,7 +14,7 @@
    [![Fork on GitHub](https://img.shields.io/badge/Fork%20Repo-blue?logo=github&style=for-the-badge)](https://github.com/binarytrails-ai/agent-builder-workshop/fork)
 
 1. The recommended way to work through this workshop is with **GitHub Codespaces**, which provides a ready-to-use environment with all required tools. </br>Alternatively, you can use a Visual Studio Code to run the workshop locally.</br></br>
-**Using GitHub Codespaces**: Once you've forked the repository, navigate to your forked repository on GitHub and click the green **Code** button, then select the **Codespaces** tab and click **Create codespace on main**. 
+**Using GitHub Codespaces**: Once you've forked the repository, navigate to your forked repository on GitHub and click the green **Code** button, then select the **Codespaces** tab and click **Create codespace on main**.
 
     The Codespace will be pre-configured with all the necessary dependencies and tools to run the labs.
 
@@ -23,33 +23,53 @@
 
 ---
 
-## Understanding the Labs Structure
-
-The workshop consists of the following labs:
-
-1. [Lab 1: Remember Me - Personalization](./01-lab-personalization.md)
-2. [Lab 2: Memory Management](./02-lab-memory.md)
-3. [Lab 3: Tool Integration](./03-lab-tools.md)
-4. [Lab 4: Human Approval](./05-lab-human-approval.md)
-
-The codebase for the workshop is organized into two main parts: the backend (.NET) and the frontend (React).
-
-```text
-src/
-├── backend/    # .NET backend code
-└── frontend/   # React frontend code
-```
-
-The labs are expected to be completed in order as they build incrementally on the previous one.
-In most of the labs, you will only be modifying the agents in the backend codebase to implement new capabilities.
-
----
-
 ## Set Up Azure Infrastructure
 
-Create your Azure Environment by following the instructions in the [Azure Resource Setup Guide](./Resources/azure-resource-setup.md).  This will provision the necessary resources in Azure for completing the labs.
+Deploy the application to Azure. You will also connect to these resources when running the application from your local machine or Codespace.
 
-You will connect to these resources when running the application locally on your machine or in GitHub Codespaces.
+### 1. Authenticate with Azure
+
+First, authenticate with your Azure account using the Azure Developer CLI:
+
+```powershell
+azd auth login --use-device-code
+```
+
+Follow the prompts to complete the authentication process in your browser.
+
+### 2. Create and Configure Environment
+
+Create a new environment for your Azure resources:
+
+```powershell
+azd env new dev
+azd env select dev
+azd env set AZURE_LOCATION australiaeast
+```
+
+!!! Note "Azure Location"
+    You can change `australiaeast` to any Azure region that supports AI Foundry. Common options include: `eastus`, `westus2`, `westeurope`, `southeastasia`.
+
+### 3. Provision and Deploy
+
+Deploy all required Azure resources using a single command:
+
+```powershell
+azd up
+```
+
+This command will:
+
+- Provision all the necessary resources in Azure.
+- Deploy AI models.
+- Configure authentication and permissions
+
+!!! Warning "Deployment Time"
+    The deployment process may take 5-10 minutes to complete. Please be patient while Azure provisions all resources.
+
+### Verify Deployment ✅
+
+1. Navigate to the [Azure Portal](https://portal.azure.com) and verify the resources under the resource group `rg-aiagent-ws-dev`.
 
 ---
 
@@ -148,10 +168,4 @@ The complete source code for all labs is available in the `completed` branch of 
 
 [![View Completed Code](https://img.shields.io/badge/View%20Completed%20Code-blue?logo=github&style=for-the-badge)](https://github.com/binarytrails-ai/agent-builder-workshop/tree/completed)
 
-## Let's get started 👩‍💻🤖
-
-Once your environment is set up, you are ready to begin the labs!
-
-👉 **[Lab 1: Remember Me - Personalization & Memory](./01-lab-personalization.md)**
-
-Happy coding!
+---

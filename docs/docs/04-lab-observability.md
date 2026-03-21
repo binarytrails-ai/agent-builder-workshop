@@ -177,11 +177,3 @@ The .NET Aspire Dashboard provides a rich web UI for viewing OpenTelemetry trace
     ![Aspire Dashboard - Span Details](./media/aspire-trace-view-log-entry.png)
 
 ---
-
-## Next Steps
-
-Congratulations! Your agent is now fully observable with distributed tracing.
-
-You can now move on to the next lab:
-
-👉 **[Lab 4: Human Approval - Approval Workflows](05-lab-human-approval.md)**

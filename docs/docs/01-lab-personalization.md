@@ -414,11 +414,5 @@ The `UserProfileMemoryProvider` class manages personalization by intercepting me
     ```
 
     *Expected Response:* Agent references your stored profile and provides personalized recommendations based on your preferences.*
-
-## Next Steps
-
-Congratulations! Your agent can now remember user preferences and provide personalized travel recommendations.
-
- You can now move on to the next lab:
-
-👉 **[Lab 2: Remember Everything - Long-Term Memory with Vector Search](02-lab-memory.md)**
+    
+---

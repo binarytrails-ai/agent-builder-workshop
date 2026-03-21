@@ -394,11 +394,3 @@ Now update the `CreateAsync` method to register the tools with the agent:
      - "Luxury overnight flight with excellent service"
 
 ---
-
-## Next Steps
-
-Congratulations! Your agent can now take real actions using tools and provide better user experiences.
-
-You can now move on to the next lab:
-
-👉 **[Lab 4: Human Approval - Approval Workflows](05-lab-human-approval.md)**

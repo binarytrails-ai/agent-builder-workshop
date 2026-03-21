@@ -53,6 +53,22 @@ Content-Type: application/json
   ]
 }
 
+
+
+### OpenAI Chat Completions API
+POST {{AIAgent.Host_HostAddress}}/ContosoTravelAgent/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-4o",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hi! Can you search for budget-friendly flights from Melbourne to Perth"
+    }
+  ]
+}
+
 ### OpenAI Chat Completions API with History
 POST {{AIAgent.Host_HostAddress}}/ContosoTravelAgent/v1/chat/completions
 Content-Type: application/json
