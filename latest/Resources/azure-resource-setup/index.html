@@ -12,21 +12,17 @@
         <link rel="canonical" href="https://binarytrails-ai.github.io/agent-builder-workshop/latest/Resources/azure-resource-setup/">
       
       
-        <link rel="prev" href="../../resources/">
-      
-      
-        <link rel="next" href="../aspire-dashboard-setup/">
       
       
         
       
       
       <link rel="icon" href="../../media/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Azure Resource Deployment - AI Agent Builder Workshop</title>
+        <title>Setting Up Azure Azure Resources for the Workshop - AI Agent Builder Workshop</title>
       
     
     
@@ -128,7 +124,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Azure Resource Deployment
+              Setting Up Azure Azure Resources for the Workshop
             
           </span>
         </div>
@@ -314,20 +310,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked="">
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5">
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -348,7 +342,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -358,114 +352,6 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix="">
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Azure Resource Deployment
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Azure Resource Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites ✅
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deploying-azure-resources" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deploying Azure Resources 🚀
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verify-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verify Deployment ✅
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
             
               
                 
@@ -606,9 +492,7 @@
 
 
 <h1 id="setting-up-azure-azure-resources-for-the-workshop">Setting Up Azure Azure Resources for the Workshop<a class="headerlink" href="#setting-up-azure-azure-resources-for-the-workshop" title="Permanent link">¶</a></h1>
-<p>In this guide, you will set up the necessary Azure resources required to complete the labs in this workshop. </p>
-<p>The labs utilize models and services from Azure AI Foundry.</p>
-<p>Azure AI Foundry is a managed service that simplifies the development and deployment of AI applications by providing tools for model management, evaluation, and monitoring.</p>
+<p>In this guide, you will set up the necessary Azure resources required to complete the labs in this workshop. The labs utilize models and services from Azure AI Foundry.</p>
 <hr>
 <h2 id="prerequisites">Prerequisites ✅<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
 <ol>
@@ -644,7 +528,7 @@
 </code></pre></div>
 <p>This command will:</p>
 <ul>
-<li>Provision Azure AI Foundry resources (AI Hub, AI Project)</li>
+<li>Provision all the necessary resources in Azure.</li>
 <li>Deploy AI models.</li>
 <li>Configure authentication and permissions</li>
 </ul>
@@ -654,14 +538,7 @@
 </div>
 <h2 id="verify-deployment">Verify Deployment ✅<a class="headerlink" href="#verify-deployment" title="Permanent link">¶</a></h2>
 <ol>
-<li>Navigate to the <a href="https://portal.azure.com">Azure Portal</a></li>
-<li>Look for a resource group named <code>rg-aiagent-ws-dev</code> (or similar, based on your environment name)</li>
-<li>Verify the following resources are created:<ul>
-<li>Azure AI Hub</li>
-<li>Azure AI Project</li>
-<li>AI models (e.g., GPT-4)</li>
-</ul>
-</li>
+<li>Navigate to the <a href="https://portal.azure.com">Azure Portal</a> and verify the resources under the resource group <code>rg-aiagent-ws-dev</code>.</li>
 </ol>
 <hr>
 
@@ -696,44 +573,6 @@
       
         <footer class="md-footer">
   
-    
-      
-      <nav class="md-footer__inner md-grid" aria-label="Footer">
-        
-          
-          <a href="../../resources/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Learning Resources">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                Learning Resources
-              </div>
-            </div>
-          </a>
-        
-        
-          
-          <a href="../aspire-dashboard-setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Aspire Dashboard Setup">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                Aspire Dashboard Setup
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
-            </div>
-          </a>
-        
-      </nav>
     
   
   <div class="md-footer-meta md-typeset">

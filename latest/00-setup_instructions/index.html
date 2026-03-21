@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../media/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -318,17 +318,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-the-labs-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Labs Structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#set-up-azure-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -377,17 +366,6 @@
     <span class="md-ellipsis">
       
         Completed Source Code
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#lets-get-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Let's get started 👩‍💻🤖
       
     </span>
   </a>
@@ -510,34 +488,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Resources/azure-resource-setup/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Azure Resource Deployment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../Resources/aspire-dashboard-setup/" class="md-nav__link">
         
   
@@ -642,17 +592,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-the-labs-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Labs Structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#set-up-azure-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -707,17 +646,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#lets-get-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Let's get started 👩‍💻🤖
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -751,7 +679,7 @@
 </li>
 <li>
 <p>The recommended way to work through this workshop is with <strong>GitHub Codespaces</strong>, which provides a ready-to-use environment with all required tools. <br>Alternatively, you can use a Visual Studio Code to run the workshop locally.<br><br>
-<strong>Using GitHub Codespaces</strong>: Once you've forked the repository, navigate to your forked repository on GitHub and click the green <strong>Code</strong> button, then select the <strong>Codespaces</strong> tab and click <strong>Create codespace on main</strong>. </p>
+<strong>Using GitHub Codespaces</strong>: Once you've forked the repository, navigate to your forked repository on GitHub and click the green <strong>Code</strong> button, then select the <strong>Codespaces</strong> tab and click <strong>Create codespace on main</strong>.</p>
 <p>The Codespace will be pre-configured with all the necessary dependencies and tools to run the labs.</p>
 <div class="admonition warning">
 <p class="admonition-title">It may take a few minutes for the Codespace to be created and all dependencies to be installed.</p>
@@ -760,25 +688,41 @@
 </li>
 </ol>
 <hr>
-<h2 id="understanding-the-labs-structure">Understanding the Labs Structure<a class="headerlink" href="#understanding-the-labs-structure" title="Permanent link">¶</a></h2>
-<p>The workshop consists of the following labs:</p>
-<ol>
-<li><a href="../01-lab-personalization/">Lab 1: Remember Me - Personalization</a></li>
-<li><a href="../02-lab-memory/">Lab 2: Memory Management</a></li>
-<li><a href="../03-lab-tools/">Lab 3: Tool Integration</a></li>
-<li><a href="../05-lab-human-approval/">Lab 4: Human Approval</a></li>
-</ol>
-<p>The codebase for the workshop is organized into two main parts: the backend (.NET) and the frontend (React).</p>
-<div class="highlight"><pre><span></span><code>src/
-├── backend/    # .NET backend code
-└── frontend/   # React frontend code
-</code></pre></div>
-<p>The labs are expected to be completed in order as they build incrementally on the previous one.
-In most of the labs, you will only be modifying the agents in the backend codebase to implement new capabilities.</p>
-<hr>
 <h2 id="set-up-azure-infrastructure">Set Up Azure Infrastructure<a class="headerlink" href="#set-up-azure-infrastructure" title="Permanent link">¶</a></h2>
-<p>Create your Azure Environment by following the instructions in the <a href="../Resources/azure-resource-setup/">Azure Resource Setup Guide</a>.  This will provision the necessary resources in Azure for completing the labs.</p>
-<p>You will connect to these resources when running the application locally on your machine or in GitHub Codespaces.</p>
+<p>Deploy the application to Azure. You will also connect to these resources when running the application from your local machine or Codespace.</p>
+<h3 id="1-authenticate-with-azure">1. Authenticate with Azure<a class="headerlink" href="#1-authenticate-with-azure" title="Permanent link">¶</a></h3>
+<p>First, authenticate with your Azure account using the Azure Developer CLI:</p>
+<div class="highlight"><pre><span></span><code><span class="n">azd</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">-</span><span class="n">-use-device-code</span>
+</code></pre></div>
+<p>Follow the prompts to complete the authentication process in your browser.</p>
+<h3 id="2-create-and-configure-environment">2. Create and Configure Environment<a class="headerlink" href="#2-create-and-configure-environment" title="Permanent link">¶</a></h3>
+<p>Create a new environment for your Azure resources:</p>
+<div class="highlight"><pre><span></span><code><span class="n">azd</span> <span class="n">env</span> <span class="n">new</span> <span class="n">dev</span>
+<span class="n">azd</span> <span class="n">env</span> <span class="nb">select </span><span class="n">dev</span>
+<span class="n">azd</span> <span class="n">env</span> <span class="nb">set </span><span class="n">AZURE_LOCATION</span> <span class="n">australiaeast</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Azure Location</p>
+<p>You can change <code>australiaeast</code> to any Azure region that supports AI Foundry. Common options include: <code>eastus</code>, <code>westus2</code>, <code>westeurope</code>, <code>southeastasia</code>.</p>
+</div>
+<h3 id="3-provision-and-deploy">3. Provision and Deploy<a class="headerlink" href="#3-provision-and-deploy" title="Permanent link">¶</a></h3>
+<p>Deploy all required Azure resources using a single command:</p>
+<div class="highlight"><pre><span></span><code><span class="n">azd</span> <span class="n">up</span>
+</code></pre></div>
+<p>This command will:</p>
+<ul>
+<li>Provision all the necessary resources in Azure.</li>
+<li>Deploy AI models.</li>
+<li>Configure authentication and permissions</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Deployment Time</p>
+<p>The deployment process may take 5-10 minutes to complete. Please be patient while Azure provisions all resources.</p>
+</div>
+<h3 id="verify-deployment">Verify Deployment ✅<a class="headerlink" href="#verify-deployment" title="Permanent link">¶</a></h3>
+<ol>
+<li>Navigate to the <a href="https://portal.azure.com">Azure Portal</a> and verify the resources under the resource group <code>rg-aiagent-ws-dev</code>.</li>
+</ol>
 <hr>
 <h2 id="load-sample-data">Load Sample Data<a class="headerlink" href="#load-sample-data" title="Permanent link">¶</a></h2>
 <p>Before running the application, you should load your database with sample data which includes chat history and flight information. This will allow you to test the agent's memory capabilities and the flight search tool in later labs.</p>
@@ -860,10 +804,7 @@ In most of the labs, you will only be modifying the agents in the backend codeba
 <h2 id="completed-source-code">Completed Source Code<a class="headerlink" href="#completed-source-code" title="Permanent link">¶</a></h2>
 <p>The complete source code for all labs is available in the <code>completed</code> branch of the repository. You can switch to this branch at any time to view the final implementation.</p>
 <p><a href="https://github.com/binarytrails-ai/agent-builder-workshop/tree/completed"><img alt="View Completed Code" src="https://img.shields.io/badge/View%20Completed%20Code-blue?logo=github&amp;style=for-the-badge"></a></p>
-<h2 id="lets-get-started">Let's get started 👩‍💻🤖<a class="headerlink" href="#lets-get-started" title="Permanent link">¶</a></h2>
-<p>Once your environment is set up, you are ready to begin the labs!</p>
-<p>👉 <strong><a href="../01-lab-personalization/">Lab 1: Remember Me - Personalization &amp; Memory</a></strong></p>
-<p>Happy coding!</p>
+<hr>
 
 
 
