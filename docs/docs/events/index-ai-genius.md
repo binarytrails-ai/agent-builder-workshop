@@ -38,6 +38,13 @@ These standalone labs introduce core concepts through hands-on examples. The cod
 
 ### Travel Assistant
 
+The workshop consists of the following labs:
+
+1. [Lab 1: Remember Me - Personalization](./01-lab-personalization.md)
+2. [Lab 2: Memory Management](./02-lab-memory.md)
+3. [Lab 3: Tool Integration](./03-lab-tools.md)
+4. [Lab 4: Human Approval](./05-lab-human-approval.md)
+
 The codebase for the workshop is organized into two main parts: the backend (.NET) and the frontend (React).
 
 ```text
@@ -45,6 +52,9 @@ src/
 ├── backend/    # .NET backend code
 └── frontend/   # React frontend code
 ```
+
+The labs are expected to be completed in order as they build incrementally on the previous one.
+In most of the labs, you will only be modifying the agents in the backend codebase to implement new capabilities.
 
 ## Technologies You'll Use
 
